@@ -6,7 +6,7 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\AbsenceController;
 use App\Http\Controllers\API\CutiController;
-
+use App\Http\Controllers\API\AppController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,6 +24,7 @@ Route::prefix('employee')->middleware('auth:sanctum')->name('employee.')->group(
     Route::post('', [EmployeeController::class, 'create'])->name('create');
     Route::post('update/{id}', [EmployeeController::class, 'update'])->name('update');
     Route::delete('{id}', [EmployeeController::class, 'destroy'])->name('delete');
+    Route::get('history', [EmployeeController::class, 'employeeHistory'])->name('history');
 });
 
 // Absence API
@@ -34,7 +35,14 @@ Route::prefix('absence')->middleware('auth:sanctum')->name('absence.')->group(fu
 
 // Cuti API
 Route::prefix('cuti')->middleware('auth:sanctum')->name('cuti.')->group(function () {
+    Route::get('', [CutiController::class, 'fetch'])->name('fetch');
     Route::post('', [CutiController::class, 'create'])->name('create');
+});
+
+// Setting API
+Route::prefix('setting')->middleware('auth:sanctum')->name('setting.')->group(function () {
+    Route::get('', [AppController::class, 'getSetting'])->name('getSetting');
+    Route::post('', [AppController::class, 'updateSetting'])->name('updateSetting');
 });
 
 // Auth API

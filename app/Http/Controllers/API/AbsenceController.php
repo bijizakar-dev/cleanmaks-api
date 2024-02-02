@@ -31,17 +31,19 @@ class AbsenceController extends Controller
 
             //Check validation status user absence
             // 1. Check apakah type absen sama dengan yg di request
-            if($lastAbsence->type != $request->type) {
-                // 2. Check type Out / In
-                if($request->type == 'OUT') {
-                    // 3. Check ClockOut dihari yg berbeda dengan ClockIn (Tidak bisa absen dihari yg berbeda)
-                    if(date('Y-m-d', strtotime($lastAbsence->date)) != date('Y-m-d', strtotime($request->date))){
-                        $date_clock = $lastAbsence->date;
+            if(!empty($lastAbsence)) {
+                if($lastAbsence->type != $request->type) {
+                    // 2. Check type Out / In
+                    if($request->type == 'OUT') {
+                        // 3. Check ClockOut dihari yg berbeda dengan ClockIn (Tidak bisa absen dihari yg berbeda)
+                        if(date('Y-m-d', strtotime($lastAbsence->date)) != date('Y-m-d', strtotime($request->date))){
+                            $date_clock = $lastAbsence->date;
+                        }
                     }
+                } else {
+                    $type = $lastAbsence->type == 'IN' ? 'Pulang' : 'Masuk';
+                    throw new Exception('Silahkan Absen '.$type.' terlebih dahulu');
                 }
-            } else {
-                $type = $lastAbsence->type == 'IN' ? 'Pulang' : 'Masuk';
-                throw new Exception('Silahkan Absen '.$type.' terlebih dahulu');
             }
 
             //store image
@@ -118,8 +120,6 @@ class AbsenceController extends Controller
         if(($date_start !== '') & ($date_end !== '')) {
             $absences->whereBetween('date', [$date_start, $date_end]);
         }
-
-        dd($user = auth()->user()); die;
 
         return ResponseFormatter::success([
             'status' => true,

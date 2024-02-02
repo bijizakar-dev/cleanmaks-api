@@ -74,6 +74,22 @@ class EmployeeController extends Controller
         ]);
     }
 
+    public function employeeHistory(Request $request) {
+
+        $employee_id = $request->input('employee_id') !== null ? $request->input('employee_id') : auth()->user()->employee_id;
+
+        $result = null;
+        $model = new Employee();
+
+        $result = $model->employeeHistory($employee_id);
+
+        return ResponseFormatter::success([
+            'status' => true,
+            'msg' => 'History Found',
+            'data' => $result
+        ]);
+    }
+
     public function create(CreateEmployeeRequest $request) {
         try {
             if($request->hasFile('photo')){
