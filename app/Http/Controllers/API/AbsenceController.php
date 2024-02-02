@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Helpers\ResponseFormatter;
+use App\Helper\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AbsencesRequest;
 use App\Models\Absence;
+use App\Models\Setting;
 use Exception;
 use Illuminate\Http\Request;
+use Stevebauman\Location\Facades\Location;
 
 class AbsenceController extends Controller
 {
@@ -127,5 +129,69 @@ class AbsenceController extends Controller
             'data' => $absences->paginate($limit)
         ]);
 
+    }
+
+    public function radiusAbsence(Request $request) {
+        try {
+            //validate parameters
+            $request->validate([
+                'latitude' => ['required', 'string'], // -7.512453
+                'longitude' => ['required', 'string'] // 110.225730
+            ]);
+
+            $coordinates = [
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+            ];
+
+            $distance = $this->calculateRadius($coordinates);
+
+            $data['type'] = 'QR';
+            $data['distance'] = $distance;
+            $data['status'] = 'In Radius';
+
+            if($distance > 0.1) { // batas toleransi 100m
+                $data['type'] = 'Selfie';
+                $data['distance'] = $distance;
+                $data['status'] = 'Out Radius';
+            }
+
+            return ResponseFormatter::success([
+                'status' => true,
+                'msg' => 'Checking Radius Success',
+                'data' => $data
+            ]);
+
+        } catch (Exception $th) {
+            return ResponseFormatter::error([
+                'status' => false,
+                'msg' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    function calculateRadius($param){
+        // get longitude and latitude from setting application
+        $settingApp = Setting::first();
+
+        // define longitude and latitude
+        $latCom = deg2rad($settingApp->latitude);
+        $longCom = deg2rad($settingApp->longitude);
+        $latUser = deg2rad($param['latitude']);
+        $longUser = deg2rad($param['longitude']);
+
+        // radius earth in KM
+        $earthRad = 6371;
+
+        //Calculate Radius
+        $latDiff = $latCom - $latUser;
+        $longDiff = $longCom - $longUser;
+
+        // Haversine formula
+        $a = sin($latDiff / 2) * sin($latDiff / 2) + cos($latCom) * cos($latUser) * sin($longDiff / 2) * sin($longDiff / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        $distance = $earthRad * $c;
+
+        return $distance;
     }
 }

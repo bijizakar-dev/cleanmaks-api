@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Helpers\ResponseFormatter;
+use App\Helper\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;

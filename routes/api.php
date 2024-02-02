@@ -31,6 +31,8 @@ Route::prefix('employee')->middleware('auth:sanctum')->name('employee.')->group(
 Route::prefix('absence')->middleware('auth:sanctum')->name('absence.')->group(function () {
     Route::post('clock', [AbsenceController::class, 'clock'])->name('clock');
     Route::get('list', [AbsenceController::class, 'absenceList'])->name('list');
+
+    Route::get('radiusAbsence', [AbsenceController::class, 'radiusAbsence'])->name('checkLocationAbsence');
 });
 
 // Cuti API
