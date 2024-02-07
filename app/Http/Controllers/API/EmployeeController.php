@@ -75,13 +75,16 @@ class EmployeeController extends Controller
     }
 
     public function employeeHistory(Request $request) {
-
-        $employee_id = $request->input('employee_id') !== null ? $request->input('employee_id') : auth()->user()->employee_id;
+        $search = [
+            "employee_id" => $request->input('employee_id') !== null ? $request->input('employee_id') : auth()->user()->employee_id,
+            "start_date" => $request->input('start_date') !== '' ? $request->input('start_date') : date('Y-m-d'),
+            "end_date" => $request->input('end_date') !== '' ? $request->input('end_date') : date('Y-m-d'),
+        ];
 
         $result = null;
         $model = new Employee();
 
-        $result = $model->employeeHistory($employee_id);
+        $result = $model->employeeHistory($search);
 
         return ResponseFormatter::success([
             'status' => true,

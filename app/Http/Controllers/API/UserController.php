@@ -40,7 +40,8 @@ class UserController extends Controller
             //generate token
             $tokenResult = $user->createToken('authToken')->plainTextToken;
 
-            $data_user = User::with('employee')->find($user->id);
+            $m_user = new User;
+            $data_user = $m_user->getUserEmployee($user->id);
 
             //return response
             return ResponseFormatter::success([
@@ -53,7 +54,7 @@ class UserController extends Controller
         } catch (Exception $th) {
             return ResponseFormatter::error([
                 'status' => false,
-                'msg' => 'Authentication failed'
+                'msg' => 'Authentication failed with error: ' . $th->getMessage(),
             ]);
         }
     }
@@ -106,10 +107,15 @@ class UserController extends Controller
     public function fetch(Request $request) {
         //get user
         $user = $request->user();
-        $data_user = User::with('employee')->find($user->id);
 
-        return ResponseFormatter::success($data_user);
+        $m_user = new User;
+        $data_user = $m_user->getUserEmployee($user->id);
 
+        return ResponseFormatter::success([
+            'status' => true,
+            'msg' => 'Auth Fetch successful',
+            'data' => $data_user
+        ], 'Auth Fetch successful');
 
     }
 }
