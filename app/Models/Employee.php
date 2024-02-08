@@ -34,6 +34,7 @@ class Employee extends Model
                 'absences.type as type',
                 'absences.latitude as latitude',
                 'absences.longitude as longitude',
+                'absences.image as image',
                 DB::raw("'' as start_date"),
                 DB::raw("'' as end_date"),
                 DB::raw("'' as status"))
@@ -56,6 +57,7 @@ class Employee extends Model
                         'cutis.type as type',
                         DB::raw("'' as latitude"),
                         DB::raw("'' as longitude"),
+                        DB::raw("IFNULL(cutis.file, '') as image"),
                         'cutis.start_date as start_date',
                         'cutis.end_date as end_date',
                         'cutis.status as status')
