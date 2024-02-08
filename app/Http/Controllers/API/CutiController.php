@@ -27,8 +27,8 @@ class CutiController extends Controller
             // }
 
             if ($request->hasFile('file')) {
-                $path = $request->file('file')->store('files/cuti', 'local'); // Simpan file di dalam direktori storage/app/files/cuti
-                $path = str_replace('files/cuti', 'storage/files/cuti', $path); // Ubah path agar sesuai dengan penyimpanan publik
+                $path = $request->file('file')->store('public/files/cuti', 'local'); // Simpan file di dalam direktori storage/app/files/cuti
+                $path = str_replace('public/files/cuti', 'storage/files/cuti', $path); // Ubah path agar sesuai dengan penyimpanan publik
             }
 
             $createCuti = Cuti::create([

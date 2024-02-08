@@ -54,8 +54,8 @@ class AbsenceController extends Controller
             // }
 
             if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('photos/absences', 'local'); // Simpan file di dalam direktori storage/app/files/cuti
-                $path = str_replace('photos/absences', 'storage/photos/absences', $path); // Ubah path agar sesuai dengan penyimpanan publik
+                $path = $request->file('image')->store('public/photos/absences'); // Simpan file di dalam direktori storage/app/files/cuti
+                $path = str_replace('public/photos/absences', 'storage/photos/absences', $path); // Ubah path agar sesuai dengan penyimpanan publik
             }
 
             //Create Absence User

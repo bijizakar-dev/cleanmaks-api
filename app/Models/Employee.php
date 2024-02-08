@@ -35,8 +35,10 @@ class Employee extends Model
                 'absences.latitude as latitude',
                 'absences.longitude as longitude',
                 'absences.image as image',
+                'absences.address as address',
                 DB::raw("'' as start_date"),
                 DB::raw("'' as end_date"),
+                DB::raw("'' as reason"),
                 DB::raw("'' as status"))
             ->leftJoin('absences', 'users.id', '=', 'absences.user_id')
             ->when(!empty($param['employee_id']), function ($query) use ($param) {
@@ -58,8 +60,10 @@ class Employee extends Model
                         DB::raw("'' as latitude"),
                         DB::raw("'' as longitude"),
                         DB::raw("IFNULL(cutis.file, '') as image"),
+                        DB::raw("'' as address"),
                         'cutis.start_date as start_date',
                         'cutis.end_date as end_date',
+                        'cutis.reason as reason',
                         'cutis.status as status')
                     ->leftJoin('cutis', 'users.employee_id', '=', 'cutis.employee_id_applicant')
                     ->when(!empty($param['employee_id']), function ($query) use ($param) {
@@ -69,6 +73,7 @@ class Employee extends Model
                         $query->whereBetween('cutis.date', [$param['start_date'].' 00:00:00', $param['end_date'].' 23:59:59']);
                     })
             )
+            ->orderBy('date', 'desc')
             ->paginate(10);
 
 
