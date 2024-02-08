@@ -32,6 +32,8 @@ class Employee extends Model
                 'users.name as user_name',
                 'absences.date as date',
                 'absences.type as type',
+                'absences.latitude as latitude',
+                'absences.longitude as longitude',
                 DB::raw("'' as start_date"),
                 DB::raw("'' as end_date"),
                 DB::raw("'' as status"))
@@ -52,6 +54,8 @@ class Employee extends Model
                         'users.name as user_name',
                         'cutis.date as date',
                         'cutis.type as type',
+                        DB::raw("'' as latitude"),
+                        DB::raw("'' as longitude"),
                         'cutis.start_date as start_date',
                         'cutis.end_date as end_date',
                         'cutis.status as status')
@@ -65,38 +69,6 @@ class Employee extends Model
             )
             ->paginate(10);
 
-        // if (!empty($param['employee_id'])) {
-        //     $conditions[] = "`cutis`.`id` = '".$param['id']."'";
-        // }
-        // if (!empty($param['start_date']) && !empty($param['end_date'])) {
-        //     $conditions[] = "(`absences`.`date` between '".$param['start_date']."' and '".$param['end_date']."' OR
-        //                     `cutis`.`date` between '".$param['start_date']."' and '".$param['end_date']."')";
-        // }
-
-        // $result = DB::table('users')
-        //         ->select(
-        //             DB::raw("'Absensi' as data_source"),
-        //             'users.name as user_name',
-        //             'absences.date as date',
-        //             'absences.type as type',
-        //             DB::raw("'' as start_date"),
-        //             DB::raw("'' as end_date"),
-        //             DB::raw("'' as status"))
-        //         ->leftJoin('absences', 'users.id', '=', 'absences.user_id')
-        //         ->where('users.employee_id', $employeeId)
-        //         ->unionAll(
-        //             DB::table('users')
-        //             ->select(
-        //                 DB::raw("'Cuti' as data_source"),
-        //                 'users.name as user_name',
-        //                 'cutis.date as date',
-        //                 'cutis.type as type',
-        //                 'cutis.start_date as start_date',
-        //                 'cutis.end_date as end_date',
-        //                 'cutis.status as status')
-        //             ->leftJoin('cutis', 'users.employee_id', '=', 'cutis.employee_id_applicant')
-        //             ->where('users.employee_id', $employeeId))
-        //         ->paginate(10);
 
         return $result;
     }
