@@ -48,11 +48,6 @@ class AbsenceController extends Controller
                 }
             }
 
-            // //store image
-            // if($request->hasFile('image')){
-            //     $path = $request->file('image')->store('public/photos/absences');
-            // }
-
             if ($request->hasFile('image')) {
                 $path = $request->file('image')->store('public/photos/absences'); // Simpan file di dalam direktori storage/app/files/cuti
                 $path = str_replace('public/photos/absences', 'storage/photos/absences', $path); // Ubah path agar sesuai dengan penyimpanan publik
@@ -144,20 +139,29 @@ class AbsenceController extends Controller
                 'longitude' => ['required', 'string'] // 110.225730
             ]);
 
+            $data['type'] = 'QR';
+            $data['distance'] = 0;
+            $data['status'] = 'In Radius';
+            $data['absence'] = 'IN';
+
+            $user = auth()->user()->id;
+            $lastAbsence = Absence::last_absence_user($user);
+            if(!empty($lastAbsence)) {
+                if($lastAbsence->type != 'OUT') {
+                    $data['absence'] = 'OUT';
+                }
+            }
+
             $coordinates = [
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
             ];
 
             $distance = $this->calculateRadius($coordinates);
-
-            $data['type'] = 'QR';
             $data['distance'] = $distance;
-            $data['status'] = 'In Radius';
 
             if($distance > 0.1) { // batas toleransi 100m
                 $data['type'] = 'Selfie';
-                $data['distance'] = $distance;
                 $data['status'] = 'Out Radius';
             }
 

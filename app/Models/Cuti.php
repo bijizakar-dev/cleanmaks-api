@@ -18,6 +18,7 @@ class Cuti extends Model
         'type',
         'start_date',
         'end_date',
+        'total',
         'reason',
         'file',
         'status',

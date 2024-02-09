@@ -22,9 +22,7 @@ class CutiController extends Controller
             ]);
             $user = auth()->user();
 
-            // if($request->hasFile('file')){
-            //     $path = $request->file('file')->store('public/files/cuti');
-            // }
+            $total_day = $this->hitungHariCuti($request->start_date, $request->end_date);
 
             if ($request->hasFile('file')) {
                 $path = $request->file('file')->store('public/files/cuti', 'local'); // Simpan file di dalam direktori storage/app/files/cuti
@@ -38,6 +36,7 @@ class CutiController extends Controller
                 'type' => $request->type,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
+                'total' => $total_day,
                 'reason' => (!empty($request->reason))?$request->reason : null,
                 'file' => isset($path) ? $path : '',
                 'status' => 'Submitted' //'Submitted,Pending,Approved,Rejected,Cancelled'
@@ -88,5 +87,22 @@ class CutiController extends Controller
                 'error' => $th->getMessage(),
             ]);
         }
+    }
+
+    public function hitungHariCuti($start_date, $end_date)
+    {
+        $start = strtotime($start_date);
+        $end = strtotime($end_date);
+
+        $total_day = 0;
+        while ($start <= $end) {
+            if (date('N', $start) != 6 && date('N', $start) != 7) {
+                $total_day++;
+            }
+            // Tambah 1 hari
+            $start = strtotime('+1 day', $start);
+        }
+
+        return $total_day;
     }
 }
