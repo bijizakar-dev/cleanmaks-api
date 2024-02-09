@@ -7,6 +7,8 @@ use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\AbsenceController;
 use App\Http\Controllers\API\CutiController;
 use App\Http\Controllers\API\AppController;
+use App\Http\Controllers\API\PermitController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,12 +35,18 @@ Route::prefix('absence')->middleware('auth:sanctum')->name('absence.')->group(fu
     Route::get('list', [AbsenceController::class, 'absenceList'])->name('list');
 
     Route::get('radiusAbsence', [AbsenceController::class, 'radiusAbsence'])->name('checkLocationAbsence');
+    Route::get('checkQr', [AbsenceController::class, 'checkQr'])->name('checkQr');
 });
 
 // Cuti API
 Route::prefix('cuti')->middleware('auth:sanctum')->name('cuti.')->group(function () {
     Route::get('', [CutiController::class, 'fetch'])->name('fetch');
     Route::post('', [CutiController::class, 'create'])->name('create');
+});
+
+// Permit API
+Route::prefix('permit')->middleware('auth:sanctum')->name('permit.')->group(function () {
+    Route::post('', [PermitController::class, 'create'])->name('create');
 });
 
 // Setting API

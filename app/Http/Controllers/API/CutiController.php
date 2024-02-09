@@ -30,7 +30,7 @@ class CutiController extends Controller
             }
 
             $createCuti = Cuti::create([
-                'date' => date('Y-m-d h:i:s'),
+                'date' => date('Y-m-d H:i:s'),
                 'employee_id_applicant' => (!empty($request->employee_id_applicant))?$request->employee_id_applicant : $user->employee_id,
                 'employee_id_replacement' => (!empty($request->employee_id_replacement))?$request->employee_id_replacement : null,
                 'type' => $request->type,

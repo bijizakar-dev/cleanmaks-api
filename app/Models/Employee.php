@@ -75,6 +75,30 @@ class Employee extends Model
                         $query->whereBetween('cutis.date', [$param['start_date'].' 00:00:00', $param['end_date'].' 23:59:59']);
                     })
             )
+            ->unionAll(
+                DB::table('users')
+                    ->select(
+                        DB::raw("'Izin' as data_source"),
+                        'users.name as user_name',
+                        'permits.date as date',
+                        'permits.type as type',
+                        DB::raw("'' as latitude"),
+                        DB::raw("'' as longitude"),
+                        DB::raw("IFNULL(permits.image, '') as image"),
+                        DB::raw("'' as address"),
+                        'permits.start_date as start_date',
+                        'permits.end_date as end_date',
+                        'permits.reason as reason',
+                        'permits.status as status',
+                        DB::raw("IFNULL(permits.total, '') as total"))
+                    ->leftJoin('permits', 'users.employee_id', '=', 'permits.employee_id_applicant')
+                    ->when(!empty($param['employee_id']), function ($query) use ($param) {
+                        $query->where('users.employee_id', $param['employee_id']);
+                    })
+                    ->when(!empty($param['start_date']) && !empty($param['end_date']), function ($query) use ($param) {
+                        $query->whereBetween('permits.date', [$param['start_date'].' 00:00:00', $param['end_date'].' 23:59:59']);
+                    })
+            )
             ->orderBy('date', 'desc')
             ->paginate(10);
 

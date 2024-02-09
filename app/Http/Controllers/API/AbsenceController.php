@@ -203,4 +203,28 @@ class AbsenceController extends Controller
 
         return $distance;
     }
+
+    public function checkQr(Request $request) {
+        try {
+            //check qr code
+            $code_setting = Setting::check_codeqr_setting();
+
+            if($code_setting->code != $request->qrCode){
+                throw new Exception('Checking QR Failed Different Code');
+            } else {
+                return ResponseFormatter::success([
+                    'status' => true,
+                    'msg' => 'Checking QR Success',
+                    'data' => ''
+                ]);
+            }
+
+
+        } catch (Exception $th) {
+            return ResponseFormatter::error([
+                'status' => false,
+                'msg' => $th->getMessage(),
+            ], 500);
+        }
+    }
 }
