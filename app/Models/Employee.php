@@ -39,7 +39,8 @@ class Employee extends Model
                 DB::raw("'' as start_date"),
                 DB::raw("'' as end_date"),
                 DB::raw("'' as reason"),
-                DB::raw("'' as status"))
+                DB::raw("'' as status"),
+                DB::raw("'' as total"))
             ->leftJoin('absences', 'users.id', '=', 'absences.user_id')
             ->when(!empty($param['employee_id']), function ($query) use ($param) {
                 $query->where('users.employee_id', $param['employee_id']);
@@ -64,7 +65,8 @@ class Employee extends Model
                         'cutis.start_date as start_date',
                         'cutis.end_date as end_date',
                         'cutis.reason as reason',
-                        'cutis.status as status')
+                        'cutis.status as status',
+                        DB::raw("IFNULL(cutis.total, '') as total"))
                     ->leftJoin('cutis', 'users.employee_id', '=', 'cutis.employee_id_applicant')
                     ->when(!empty($param['employee_id']), function ($query) use ($param) {
                         $query->where('users.employee_id', $param['employee_id']);
