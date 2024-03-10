@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Masterdata\DivisiController;
 use App\Http\Controllers\Masterdata\EmployeesController;
+use App\Http\Controllers\Masterdata\JabatanController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,8 +31,11 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 Route::group(['middleware' => ['auth']], function () {
     Route::group(['middleware' => ['isLoginRoles:1']], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Employee
         Route::resource('employees', EmployeesController::class);
 
+        // Divisi
         Route::prefix('divisi')->name('divisi.')->group(function () {
             Route::get('/', [DivisiController::class, 'index'])->name('index');
             Route::get('create', [DivisiController::class, 'create'])->name('create');
@@ -39,6 +43,16 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('edit/{id}', [DivisiController::class, 'edit'])->name('edit');
             Route::post('update/{id}', [DivisiController::class, 'update'])->name('update');
             Route::get('delete/{id}', [DivisiController::class, 'destroy'])->name('delete');
+        });
+
+        // Jabatan
+        Route::prefix('jabatan')->name('jabatan.')->group(function () {
+            Route::get('/', [JabatanController::class, 'index'])->name('index');
+            Route::get('create', [JabatanController::class, 'create'])->name('create');
+            Route::post('store', [JabatanController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [JabatanController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [JabatanController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [JabatanController::class, 'destroy'])->name('delete');
         });
     });
 });
