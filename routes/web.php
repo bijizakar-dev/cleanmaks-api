@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Masterdata\DivisiController;
+use App\Http\Controllers\Masterdata\EmployeesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +17,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+
+Route::get('login', [AuthController::class, 'v_login'])->name('login');
+Route::post('handleLogin', [AuthController::class, 'handleLogin'])->name('handleLogin');
+
+Route::get('register', [AuthController::class, 'v_register'])->name('register');
+Route::Post('handleRegister', [AuthController::class, 'handleRegister'])->name('handleRegister');
+
+Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::group(['middleware' => ['auth']], function () {
+    Route::group(['middleware' => ['isLoginRoles:1']], function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::resource('employees', EmployeesController::class);
+
+        Route::prefix('divisi')->name('divisi.')->group(function () {
+            Route::get('/', [DivisiController::class, 'index'])->name('index');
+            Route::get('create', [DivisiController::class, 'create'])->name('create');
+            Route::post('store', [DivisiController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [DivisiController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [DivisiController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [DivisiController::class, 'destroy'])->name('delete');
+        });
+    });
 });
