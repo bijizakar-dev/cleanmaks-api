@@ -16,7 +16,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         if(!empty($user)) {
-            return redirect()->route('home');
+            return redirect()->route('login');
         }
 
         return view('auth.login');
