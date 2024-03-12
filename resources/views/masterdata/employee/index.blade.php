@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ asset('node_modules/weathericons/css/weather-icons.min.cs') }}">
     <link rel="stylesheet" href="{{ asset('node_modules/weathericons/css/weather-icons-wind.min.css') }}">
     <link rel="stylesheet" href="{{ asset('node_modules/summernote/dist/summernote-bs4.css') }}">
+    <link rel="stylesheet" href="{{ asset('node_modules/izitoast/dist/css/iziToast.min.css') }}">
 @endsection
 
 @section('content')
@@ -43,25 +44,26 @@
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <tr>
-                                <th class="text-center">No</th>
-                                <th>Nama</th>
-                                <th>Alamat</th>
-                                <th>No Telp</th>
+                                <th style="width: 3%" class="text-center">No</th>
+                                <th style="width: 25%">Nama</th>
+                                <th>Divisi</th>
                                 <th>Jabatan</th>
-                                <th>Unit</th>
+                                <th>Alamat</th>
                                 <th class="text-center">Status</th>
-                                <th>Action</th>
+                                <th style="width: 10%" class="text-center">Action</th>
                             </tr>
 
                             {{-- Panggil data employee --}}
                             @foreach ($result as $val)
                             <tr>
-                                <td class="p-0 text-center">1</td>
-                                <td>{{ $val->name }}</td>
-                                <td class="align-middle">{{ $val->address }}</td>
-                                <td>{{$val->phone}}</td>
-                                <td>Programmer</td>
-                                <td>{{$val->unit_id }}</td>
+                                <td class="p-0 text-center">{{ ($result->currentPage() - 1) * $result->perPage() + $loop->index + 1 }}</td>
+                                <td>
+                                    <img alt="image" src="{{$val->photo != null ? asset($val->photo) : asset('/assets/img/avatar/avatar-5.png')}}" class="rounded-circle" width="35" height="35" data-toggle="title" title="">
+                                    <div class="d-inline-block ml-2">{{ $val->name }}</div>
+                                </td>
+                                <td>{{ optional($val->divisi)->name ?? '-' }}</td>
+                                <td>{{ optional($val->jabatan)->name ?? '-' }}</td>
+                                <td class="align-middle">{{ strip_tags($val->address) }} <br/> {{$val->phone}}</td>
                                 <td class="text-center">
                                     @if($val->is_verified == 1)
                                         <div class="badge badge-info">Active</div>
@@ -69,9 +71,9 @@
                                         <div class="badge badge-warning">Non-Active</div>
                                     @endif
                                 </td>
-                                <td>
-                                    <a href={{ url('employees/'.$val->id).'/edit' }} class="btn btn-success btn-sm"><i class="fas fa-pencil-ruler"></i></a>
-                                    <a href={{ url('employees/'.$val->id) }} class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+                                <td class="text-center">
+                                    <a href={{ url('employees/edit/'.$val->id) }} class="btn btn-success btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                                    <button onclick="confirmDelete('{{ url('employees/delete/'.$val->id) }}')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                             @endforeach
@@ -81,21 +83,7 @@
                     </div>
                 </div>
                 <div class="card-footer text-right">
-                    <nav class="d-inline-block">
-                      <ul class="pagination mb-0">
-                        <li class="page-item disabled">
-                          <a class="page-link" href="#" tabindex="-1"><i class="fas fa-chevron-left"></i></a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1 <span class="sr-only">(current)</span></a></li>
-                        <li class="page-item">
-                          <a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                          <a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a>
-                        </li>
-                      </ul>
-                    </nav>
+                    @include('components.pagination', ['paginator' => $result])
                 </div>
             </div>
         </div>
@@ -113,5 +101,50 @@
     <script src="{{ asset('node_modules/summernote/dist/summernote-bs4.js') }}"></script>
     <script src="{{ asset('node_modules/chocolat/dist/js/jquery.chocolat.min.js') }}"></script>
     <script src="{{ asset('../assets/js/page/index-0.js') }}"></script>
+    <script src="{{ asset('node_modules/izitoast/dist/js/iziToast.min.js') }}"></script>
+    <script src="{{ asset('node_modules/sweetalert/dist/sweetalert.min.js') }}"></script>
 
+    <script>
+
+        //message with toastr
+        @if(session()->has('success'))
+            iziToast.success({
+                title: 'Berhasil',
+                message: '{{ session('success') }}',
+                position: 'topRight'
+            });
+        @elseif(session()->has('error'))
+            iziToast.error({
+                title: 'Gagal',
+                message: '{{ session('error') }}',
+                position: 'topRight'
+            });
+        @endif
+
+        $("#deletePegawai").click(function() {
+
+        });
+
+        function refreshPage() {
+            // Reload the current page
+            window.location.href = window.location.pathname;
+        }
+
+        function confirmDelete(url) {
+            swal({
+                title: 'Konfirmasi Hapus Pegawai',
+                text: 'Anda akan menghapus pegawai tersebut ?',
+                icon: 'warning',
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    window.location.href = url;
+                } else {
+                    swal('Batal menghapus data masih tersedia!');
+                }
+            });
+        }
+
+    </script>
 @endsection

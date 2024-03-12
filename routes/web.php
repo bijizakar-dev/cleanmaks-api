@@ -32,8 +32,15 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['middleware' => ['isLoginRoles:1']], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Employee
-        Route::resource('employees', EmployeesController::class);
+        // Divisi
+        Route::prefix('employees')->name('employees.')->group(function () {
+            Route::get('/', [EmployeesController::class, 'index'])->name('index');
+            Route::get('create', [EmployeesController::class, 'create'])->name('create');
+            Route::post('store', [EmployeesController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [EmployeesController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [EmployeesController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [EmployeesController::class, 'destroy'])->name('delete');
+        });
 
         // Divisi
         Route::prefix('divisi')->name('divisi.')->group(function () {

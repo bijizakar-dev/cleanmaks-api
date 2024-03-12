@@ -96,7 +96,8 @@ class EmployeeController extends Controller
     public function create(CreateEmployeeRequest $request) {
         try {
             if($request->hasFile('photo')){
-                $path = $request->file('photo')->store('public/photos/employees');
+                $path = $request->file('photo')->store('public/photos/employees'); // Simpan file di dalam direktori storage/app/files/cuti
+                $path = str_replace('public/photos/employees', 'storage/photos/employees', $path); // Ubah path agar sesuai dengan penyimpanan publik
             }
 
             $employee = Employee::create([

@@ -17,12 +17,24 @@ class Employee extends Model
         'gender',
         'age',
         'phone',
+        'address',
         'photo',
         'unit_id',
         'role_id',
+        'jabatan_id',
         'is_verified',
         'verified_at'
     ];
+
+    public function divisi()
+    {
+        return $this->belongsTo(Divisi::class, 'unit_id');
+    }
+
+    public function jabatan()
+    {
+        return $this->belongsTo(Jabatan::class, 'jabatan_id');
+    }
 
     function employeeHistory($param) {
 
