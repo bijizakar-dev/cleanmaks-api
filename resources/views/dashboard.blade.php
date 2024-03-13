@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@section('title', 'Dashboard')
+
 @section('stylesheet')
     <link rel="stylesheet" href="{{ asset('node_modules/jqvmap/dist/jqvmap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('node_modules/weathericons/css/weather-icons.min.cs') }}">
@@ -21,10 +23,10 @@
           </div>
           <div class="card-wrap">
             <div class="card-header">
-              <h4>Total Admin</h4>
+              <h4>Pegawai</h4>
             </div>
             <div class="card-body">
-              10
+              {{$data['total_pegawai']}}
             </div>
           </div>
         </div>

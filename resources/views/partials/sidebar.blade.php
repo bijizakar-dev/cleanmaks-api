@@ -47,15 +47,29 @@
         <a href="index.html">FG</a>
       </div>
       <ul class="sidebar-menu">
+        @if (!function_exists('is_submenu_active'))
+            <?php
+            function is_submenu_active($submenu)
+            {
+                foreach ($submenu as $item) {
+                    if (request()->is($item['url'])) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            ?>
+        @endif
+
         @foreach ($menus as $menu)
             @if (isset($menu['submenu']))
                 <!-- Menu dengan submenu -->
-                <li class="nav-item dropdown {{ request()->is($menu['url'] . '*') ? 'active' : '' }}">
+                <li class="nav-item dropdown {{ is_submenu_active($menu['submenu']) ? 'active' : '' }}">
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="{{ $menu['icon'] }}"></i>
                         <span>{{ $menu['name'] }}</span>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu" style="{{ is_submenu_active($menu['submenu']) ? 'display:block' : '' }}">
                         @foreach ($menu['submenu'] as $submenu)
                             <li class="{{ request()->is($submenu['url']) ? 'active' : '' }}">
                                 <a class="nav-link" href="{{ url($submenu['url']) }}">
