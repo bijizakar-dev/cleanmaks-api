@@ -35,7 +35,7 @@
                 @enderror
 
                 <div class="form-group">
-                  <label for="email">Email</label>
+                  <label for="email">Username / Email</label>
                   <input id="email" type="text" class="form-control" name="email" tabindex="1" placeholder="Username / Email" required autofocus>
                   @if($errors->has('email'))
                     <div class="invalid-feedback">
