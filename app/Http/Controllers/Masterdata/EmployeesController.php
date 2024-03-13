@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Storage;
 
 class EmployeesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $employees = Employee::with(['divisi', 'jabatan']);
@@ -23,13 +20,10 @@ class EmployeesController extends Controller
         }
 
         $result = $employees->paginate(10);
-// dd($result);
+
         return view('masterdata.employee.index', compact('result'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $divisi = Divisi::pluck('name', 'id');
@@ -38,9 +32,6 @@ class EmployeesController extends Controller
         return view('masterdata.employee.create', compact('divisi', 'jabatan'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
 
@@ -77,17 +68,11 @@ class EmployeesController extends Controller
         return redirect()->route('employees.index')->with(['success' => 'Data Pegawai berhasil ditambahkan!']);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $divisi = Divisi::pluck('name', 'id');
@@ -98,9 +83,6 @@ class EmployeesController extends Controller
         return view('masterdata.employee.edit', compact('result', 'divisi', 'jabatan'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $request->validate([

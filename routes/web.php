@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Masterdata\DivisiController;
 use App\Http\Controllers\Masterdata\EmployeesController;
 use App\Http\Controllers\Masterdata\JabatanController;
+use App\Http\Controllers\Masterdata\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,9 +30,9 @@ Route::Post('handleRegister', [AuthController::class, 'handleRegister'])->name('
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::group(['middleware' => ['isLoginRoles:1']], function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::group(['middleware' => ['isLoginRoles:1']], function () {
         // Divisi
         Route::prefix('employees')->name('employees.')->group(function () {
             Route::get('/', [EmployeesController::class, 'index'])->name('index');
@@ -60,6 +61,16 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('edit/{id}', [JabatanController::class, 'edit'])->name('edit');
             Route::post('update/{id}', [JabatanController::class, 'update'])->name('update');
             Route::get('delete/{id}', [JabatanController::class, 'destroy'])->name('delete');
+        });
+
+        // User
+        Route::prefix('user')->name('user.')->group(function () {
+            Route::get('/', [UserController::class, 'index'])->name('index');
+            Route::get('create', [UserController::class, 'create'])->name('create');
+            Route::post('store', [UserController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [UserController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [UserController::class, 'destroy'])->name('delete');
         });
     });
 });

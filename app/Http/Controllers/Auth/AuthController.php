@@ -28,19 +28,26 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $credentials = request(['email', 'password']); //get data request
+        $user = User::where('name', $request->email)
+                    ->orWhere('email', $request->email)
+                    ->first();
 
-        if(!Auth::attempt($credentials)) {
+        if (!$user) {
             return redirect('login')
                 ->withInput()
-                ->withErrors(['login_failed'=>'Password / Email salah silahkah periksa kembali']);
+                ->withErrors(['login_failed' => 'Email / Username salah, silahkan periksa kembali']);
         }
 
-        $user = User::where('email', $credentials['email'])->first();
-        if(!Hash::check($request->password, $user->password)) {
+        if ($user->status != '1') {
             return redirect('login')
                 ->withInput()
-                ->withErrors(['login_failed'=>'Password / Email salah silahkah periksa kembali']);
+                ->withErrors(['login_failed' => 'Akun tidak aktif, silahkan hubungi admin']);
+        }
+
+        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password]) && !Auth::attempt(['name' => $request->email, 'password' => $request->password])) {
+            return redirect('login')
+                ->withInput()
+                ->withErrors(['login_failed' => 'Password salah, silahkan periksa kembali']);
         }
 
         $m_user = new User;

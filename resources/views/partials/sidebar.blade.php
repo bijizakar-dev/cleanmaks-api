@@ -14,7 +14,6 @@
                 ['name' => 'User', 'url' => 'user'],
                 ['name' => 'Divisi', 'url' => 'divisi'],
                 ['name' => 'Jabatan', 'url' => 'jabatan'],
-                ['name' => 'Roles', 'url' => 'role']
             ],
         ],
         [
@@ -37,7 +36,6 @@
                 ['name' => 'Profile', 'url' => 'setting-profile']
             ],
         ],
-        // Tambahkan menu lainnya sesuai kebutuhan
     ];
 ?>
 <div class="main-sidebar sidebar-style-2">

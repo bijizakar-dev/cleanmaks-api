@@ -26,7 +26,7 @@ class isLoginRoles
             $m_user = new User;
             $data_user = $m_user->getUserEmployee($user->id);
 
-            if ($data_user->role_id == $roles) {
+            if ($user->role == $roles) {
                 return $next($request);
             }
         }
