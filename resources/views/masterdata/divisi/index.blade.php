@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@section('title', 'Divisi')
+
 @section('stylesheet')
     <link rel="stylesheet" href="{{ asset('node_modules/jqvmap/dist/jqvmap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('node_modules/weathericons/css/weather-icons.min.cs') }}">

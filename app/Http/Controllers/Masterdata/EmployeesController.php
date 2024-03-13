@@ -14,9 +14,13 @@ class EmployeesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $employees = Employee::with(['divisi', 'jabatan']);
+
+        if ($request->has('search')) {
+            $employees->where('name', 'like', '%' . $request->input('search') . '%');
+        }
 
         $result = $employees->paginate(10);
 // dd($result);

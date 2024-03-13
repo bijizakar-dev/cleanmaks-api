@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@section('title', 'Tambah Jabatan')
+
 @section('stylesheet')
     <link rel="stylesheet" href="{{ asset('node_modules/summernote/dist/summernote-bs4.css') }}">
     <link rel="stylesheet" href="{{ asset('node_modules/selectric/public/selectric.css') }}">

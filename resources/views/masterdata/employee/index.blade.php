@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@section('title', 'Pegawai')
+
 @section('stylesheet')
     <link rel="stylesheet" href="{{ asset('node_modules/jqvmap/dist/jqvmap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('node_modules/weathericons/css/weather-icons.min.cs') }}">
@@ -29,11 +31,11 @@
                             <button class="btn btn-secondary"><i class="fas fa-history"></i> Reload</button>
                         </h4>
                         <div class="card-header-form">
-                            <form>
+                            <form action="{{ route('employees.index') }}" method="GET">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search">
+                                    <input type="text" class="form-control" name="search" placeholder="Search" value="{{ request('search') }}">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                        <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
                                     </div>
                                 </div>
                             </form>
