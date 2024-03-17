@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Layanan\IzinController;
 use App\Http\Controllers\Masterdata\DivisiController;
 use App\Http\Controllers\Masterdata\EmployeesController;
 use App\Http\Controllers\Masterdata\JabatanController;
@@ -33,7 +34,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::group(['middleware' => ['isLoginRoles:1']], function () {
-        // Divisi
+
+        // ===================================== MASTERDATA ================================================
+
+        // Pegawai
         Route::prefix('employees')->name('employees.')->group(function () {
             Route::get('/', [EmployeesController::class, 'index'])->name('index');
             Route::get('create', [EmployeesController::class, 'create'])->name('create');
@@ -71,6 +75,21 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
             Route::post('update/{id}', [UserController::class, 'update'])->name('update');
             Route::get('delete/{id}', [UserController::class, 'destroy'])->name('delete');
+        });
+
+        // ===================================== LAYANAN ==================================================
+
+        // Izin
+        Route::prefix('izin')->name('izin.')->group(function () {
+            Route::get('/', [IzinController::class, 'index'])->name('index');
+            Route::get('create', [IzinController::class, 'create'])->name('create');
+            Route::post('store', [IzinController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [IzinController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [IzinController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [IzinController::class, 'destroy'])->name('delete');
+
+            Route::get('detail/{id}', [IzinController::class, 'detail'])->name('detail');
+            Route::post('edit_status/{id}', [IzinController::class, 'edit_status'])->name('update-status');
         });
     });
 });

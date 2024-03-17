@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Permit extends Model
 {
@@ -23,4 +24,32 @@ class Permit extends Model
         'user_id_decide',
         'verified_at'
     ];
+
+    public function applicant() {
+        return $this->belongsTo(Employee::class, 'employee_id_applicant')->with('divisi');
+    }
+
+    public function user_decide() {
+        return $this->belongsTo(User::class, 'user_id_decide');
+    }
+
+    public function detail($id) {
+        $sql = "SELECT p.*,
+                e.name as employee_name,
+                d.name as divisi_name,
+                j.name as jabatan_name,
+                e2.name as employee_decide_name
+                FROM permits p
+                JOIN employees e ON (p.employee_id_applicant = e.id)
+                JOIN divisi d ON (e.unit_id = d.id)
+                LEFT JOIN jabatan j ON (e.jabatan_id = j.id)
+                LEFT JOIN users u ON (p.user_id_decide = u.id)
+                LEFT JOIN employees e2 on (u.employee_id = e2.id)
+                WHERE p.id = :id
+            ";
+
+        $data = DB::selectOne($sql, ['id' => $id]);
+
+        return $data;
+    }
 }
