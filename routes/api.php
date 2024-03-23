@@ -7,6 +7,7 @@ use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\AbsenceController;
 use App\Http\Controllers\API\CutiController;
 use App\Http\Controllers\API\AppController;
+use App\Http\Controllers\API\JenisTypeController;
 use App\Http\Controllers\API\PermitController;
 
 /*
@@ -47,6 +48,11 @@ Route::prefix('cuti')->middleware('auth:sanctum')->name('cuti.')->group(function
 // Permit API
 Route::prefix('permit')->middleware('auth:sanctum')->name('permit.')->group(function () {
     Route::post('', [PermitController::class, 'create'])->name('create');
+});
+
+// Masterdata API
+Route::prefix('masterdata')->middleware('auth:sanctum')->name('masterdata.')->group(function () {
+    Route::get('type', [JenisTypeController::class, 'getTypeJenis'])->name('type-jenis');
 });
 
 // Setting API

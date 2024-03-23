@@ -6,6 +6,7 @@ use App\Helper\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AbsencesRequest;
 use App\Models\Absence;
+use App\Models\Employee;
 use App\Models\Setting;
 use Exception;
 use Illuminate\Http\Request;
@@ -144,8 +145,8 @@ class AbsenceController extends Controller
             $data['status'] = 'In Radius';
             $data['absence'] = 'IN';
 
-            $user = auth()->user()->id;
-            $lastAbsence = Absence::last_absence_user($user);
+            $user = auth()->user();
+            $lastAbsence = Absence::last_absence_user($user->id);
             if(!empty($lastAbsence)) {
                 if($lastAbsence->type != 'OUT') {
                     $data['absence'] = 'OUT';
@@ -164,6 +165,9 @@ class AbsenceController extends Controller
                 $data['type'] = 'Selfie';
                 $data['status'] = 'Out Radius';
             }
+
+            $dataStatus = Employee::employeeStatusCount($user->employee_id);
+            $data = array_merge($data, $dataStatus);
 
             return ResponseFormatter::success([
                 'status' => true,

@@ -117,4 +117,25 @@ class Employee extends Model
 
         return $result;
     }
+
+    public static function employeeStatusCount($employee_id) {
+        $cutiCounts = Cuti::where('employee_id_applicant', $employee_id)
+                        ->selectRaw('status, COUNT(*) as count')
+                        ->groupBy('status')
+                        ->pluck('count', 'status')
+                        ->toArray();
+
+        $izinCounts = Permit::where('employee_id_applicant', $employee_id)
+                        ->selectRaw('status, COUNT(*) as count')
+                        ->groupBy('status')
+                        ->pluck('count', 'status')
+                        ->toArray();
+
+        $combinedCounts = [];
+        foreach (['Submitted', 'Pending', 'Approved', 'Rejected', 'Cancelled'] as $status) {
+            $combinedCounts[$status] = ($cutiCounts[$status] ?? 0) + ($izinCounts[$status] ?? 0);
+        }
+
+        return $combinedCounts;
+    }
 }
