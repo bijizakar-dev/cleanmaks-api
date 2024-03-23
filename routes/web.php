@@ -6,6 +6,7 @@ use App\Http\Controllers\Layanan\IzinController;
 use App\Http\Controllers\Masterdata\DivisiController;
 use App\Http\Controllers\Masterdata\EmployeesController;
 use App\Http\Controllers\Masterdata\JabatanController;
+use App\Http\Controllers\Masterdata\JenisTypeController;
 use App\Http\Controllers\Masterdata\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -76,6 +77,17 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('update/{id}', [UserController::class, 'update'])->name('update');
             Route::get('delete/{id}', [UserController::class, 'destroy'])->name('delete');
         });
+
+         // Jenis Type
+         Route::prefix('jenis-type')->name('jenis-type.')->group(function () {
+            Route::get('/', [JenisTypeController::class, 'index'])->name('index');
+            Route::get('create', [JenisTypeController::class, 'create'])->name('create');
+            Route::post('store', [JenisTypeController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [JenisTypeController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [JenisTypeController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [JenisTypeController::class, 'destroy'])->name('delete');
+        });
+
 
         // ===================================== LAYANAN ==================================================
 

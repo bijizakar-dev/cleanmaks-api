@@ -28,7 +28,7 @@
                     <div class="card-header">
                         <h4>
                             <a href="{{ url('/user/create') }}" class="btn btn-primary" ><i class="fas fa-plus"></i> Tambah</a>
-                            <button class="btn btn-secondary"><i class="fas fa-history"></i> Reload</button>
+                            <button class="btn btn-secondary" onclick="refreshPage()"><i class="fas fa-history"></i> Reload</button>
                         </h4>
                         <div class="card-header-form">
                             <form action="{{ route('user.index') }}" method="GET">

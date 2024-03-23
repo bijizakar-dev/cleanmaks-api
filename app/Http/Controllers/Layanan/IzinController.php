@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Layanan;
 use App\Helper\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
+use App\Models\JenisType;
 use App\Models\Permit;
 use Exception;
 use Illuminate\Http\Request;
@@ -34,8 +35,11 @@ class IzinController extends Controller
 
     public function create() {
         $employee = Employee::with('divisi')->get();
+        $type = JenisType::where('category', '=', 'Izin')
+                        ->where('status', '=', '1')
+                        ->get();
 
-        return view('layanan.izin.create', compact('employee'));
+        return view('layanan.izin.create', compact('employee', 'type'));
     }
 
     public function store(Request $request) {
@@ -43,7 +47,7 @@ class IzinController extends Controller
             'employee_id_applicant' => 'required|integer',
             'start_date' => 'required',
             'end_date' => 'required',
-            'type' => 'required|string',
+            'type' => 'required|integer',
             'reason' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);

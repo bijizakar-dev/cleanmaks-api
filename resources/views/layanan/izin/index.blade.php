@@ -59,7 +59,7 @@
                         <table class="table table-striped">
                             <tr>
                                 <th style="width: 3%" class="text-center">No</th>
-                                <th style="width: 25%">Pegawai</th>
+                                <th style="width: 23%">Pegawai</th>
                                 <th>Waktu Pengajuan</th>
                                 <th>Tipe</th>
                                 <th style="width: 18%">Waktu Izin</th>
@@ -74,7 +74,7 @@
                                 <td class="p-0 text-center">{{ ($result->currentPage() - 1) * $result->perPage() + $loop->index + 1 }}</td>
                                 <td>{{ $val->applicant->name }} <br/> <small>{{$val->applicant->divisi->name}}</small></td>
                                 <td>{{ date('d/m/Y H:i', strtotime($val->date)) }}</td>
-                                <td>{{ $val->type }}</td>
+                                <td>{{ $val->permit_type->name }}</td>
                                 <td>{{ date('d/m/Y', strtotime($val->start_date)) }} s.d {{date('d/m/Y', strtotime($val->end_date))}} </td>
                                 <td class="text-center">{{ $val->total }}</td>
                                 <td class="text-center">
@@ -376,7 +376,7 @@
                     $('#izin_waktu_start').text(response.start_date);
                     $('#izin_waktu_end').text(response.end_date);
                     $('#izin_total').text(response.total+' Hari');
-                    $('#izin_type').text(response.type);
+                    $('#izin_type').text(response.type_name);
                     $('#izin_reason').html(response.reason);
 
                     var status = '-';

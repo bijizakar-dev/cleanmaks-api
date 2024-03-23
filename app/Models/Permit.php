@@ -33,18 +33,24 @@ class Permit extends Model
         return $this->belongsTo(User::class, 'user_id_decide');
     }
 
+    public function permit_type() {
+        return $this->belongsTo(JenisType::class, 'type');
+    }
+
     public function detail($id) {
         $sql = "SELECT p.*,
                 e.name as employee_name,
                 d.name as divisi_name,
                 j.name as jabatan_name,
-                e2.name as employee_decide_name
+                e2.name as employee_decide_name,
+                jt.name as type_name
                 FROM permits p
                 JOIN employees e ON (p.employee_id_applicant = e.id)
                 JOIN divisi d ON (e.unit_id = d.id)
                 LEFT JOIN jabatan j ON (e.jabatan_id = j.id)
                 LEFT JOIN users u ON (p.user_id_decide = u.id)
                 LEFT JOIN employees e2 on (u.employee_id = e2.id)
+                LEFT JOIN jenis_types jt on (jt.id = p.type)
                 WHERE p.id = :id
             ";
 

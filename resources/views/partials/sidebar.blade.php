@@ -14,6 +14,7 @@
                 ['name' => 'User', 'url' => 'user'],
                 ['name' => 'Divisi', 'url' => 'divisi'],
                 ['name' => 'Jabatan', 'url' => 'jabatan'],
+                ['name' => 'Tipe Jenis', 'url' => 'jenis-type'],
             ],
         ],
         [
