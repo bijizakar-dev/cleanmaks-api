@@ -133,7 +133,7 @@ class Employee extends Model
 
         $combinedCounts = [];
         foreach (['Submitted', 'Pending', 'Approved', 'Rejected', 'Cancelled'] as $status) {
-            $combinedCounts[$status] = ($cutiCounts[$status] ?? 0) + ($izinCounts[$status] ?? 0);
+            $combinedCounts[strtolower($status)] = ($cutiCounts[$status] ?? 0) + ($izinCounts[$status] ?? 0);
         }
 
         return $combinedCounts;
