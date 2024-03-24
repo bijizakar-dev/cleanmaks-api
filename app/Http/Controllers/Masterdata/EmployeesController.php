@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Masterdata;
 use App\Http\Controllers\Controller;
 use App\Models\Divisi;
 use App\Models\Employee;
+use App\Models\EmployeeCuti;
 use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -78,13 +79,12 @@ class EmployeesController extends Controller
         $divisi = Divisi::pluck('name', 'id');
         $jabatan = Jabatan::pluck('name', 'id');
 
-        $result = Employee::with(['jabatan', 'divisi'])->findOrFail($id);
+        $result = Employee::with(['jabatan', 'divisi', 'employeeCuti'])->findOrFail($id);
 
-        return view('masterdata.employee.edit', compact('result', 'divisi', 'jabatan'));
+        return view('masterdata.employee.detail', compact('result', 'divisi', 'jabatan'));
     }
 
-    public function update(Request $request, string $id)
-    {
+    public function update(Request $request, string $id) {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:2048',
@@ -94,6 +94,7 @@ class EmployeesController extends Controller
             'unit_id' => 'required|integer',
             'jabatan_id' => 'required|integer',
             'is_verified' => 'required|integer',
+            'quota_cuti' => 'integer',
         ]);
 
         $employee = Employee::findOrFail($id);
@@ -119,11 +120,21 @@ class EmployeesController extends Controller
 
         $employee->update($data);
 
-        return redirect()->route('employees.index')->with(['success' => 'Data Pegawai berhasil diubah!']);
+        //check quota cuti employee
+        $cuti = EmployeeCuti::where('employee_id', $id)->first();
+        if(!empty($cuti)) {
+            $cuti->update(['quota' => $request->input('quota_cuti')]);
+        } else {
+            EmployeeCuti::create([
+                'employee_id' => $id,
+                'quota' => $request->input('quota_cuti')
+            ]);
+        }
+
+        return redirect()->back()->with(['success' => 'Data Pegawai berhasil diubah!']);
     }
 
-    public function destroy(string $id)
-    {
+    public function destroy(string $id) {
         $employee = Employee::findOrFail($id);
 
         //delete image

@@ -36,6 +36,11 @@ class Employee extends Model
         return $this->belongsTo(Jabatan::class, 'jabatan_id');
     }
 
+    public function employeeCuti()
+    {
+        return $this->hasOne(EmployeeCuti::class);
+    }
+
     function employeeHistory($param) {
 
         $result = DB::table('users')
