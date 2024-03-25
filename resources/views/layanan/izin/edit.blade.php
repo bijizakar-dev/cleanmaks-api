@@ -84,12 +84,9 @@
                                 <div class="col-sm-12 col-md-7">
                                     <select name="type" class="form-control selectric @error('type') is-invalid @enderror">
                                         <option disabled>Pilih Status..</option>
-                                        <option value="Sakit" {{ $result->type == 'Sakit' ? 'selected' : '' }}>Sakit</option>
-                                        <option value="Kecelakaan" {{ $result->type == 'Kecelakaan' ? 'selected' : '' }}>Kecelakaan</option>
-                                        <option value="Keluarga" {{ $result->type == 'Keluarga' ? 'selected' : '' }}>Keluarga</option>
-                                        <option value="Keadaan Darurat" {{ $result->type == 'Keadaan Darurat' ? 'selected' : '' }}>Keadaan Darurat</option>
-                                        <option value="Alasan Pribadi" {{ $result->type == 'Alasan Pribadi' ? 'selected' : '' }}>Alasan Pribadi</option>
-                                        <option value="Pendidikan" {{ $result->type == 'Pendidikan' ? 'selected' : '' }}>Pendidikan</option>
+                                        @foreach($type as $key => $val)
+                                            <option value="{{ $val->id }}" {{ $result->type == $val->id ? 'selected' : '' }}>{{ $val->name }}</option>
+                                        @endforeach
                                     </select>
                                     @error('type')
                                         <div class="invalid-feedback">{{ $message }}</div>

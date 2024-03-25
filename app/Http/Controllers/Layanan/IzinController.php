@@ -16,6 +16,14 @@ class IzinController extends Controller
     public function index(Request $request) {
         $permits = Permit::query();
 
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+
+            $permits->whereHas('applicant', function ($query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
         $result = $permits->paginate(10);
 
         return view('layanan.izin.index', compact('result'));
@@ -127,10 +135,13 @@ class IzinController extends Controller
     public function edit(string $id)
     {
         $employee = Employee::with('divisi')->get();
+        $type = JenisType::where('category', '=', 'Izin')
+                ->where('status', '=', '1')
+                ->get();
 
         $result = Permit::with(['applicant'])->findOrFail($id);
 
-        return view('layanan.izin.edit', compact('result', 'employee'));
+        return view('layanan.izin.edit', compact('result', 'employee', 'type'));
     }
 
     public function update(Request $request, string $id)
