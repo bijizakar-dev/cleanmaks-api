@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Layanan\CutiController;
 use App\Http\Controllers\Layanan\IzinController;
 use App\Http\Controllers\Masterdata\DivisiController;
 use App\Http\Controllers\Masterdata\EmployeesController;
@@ -102,6 +103,19 @@ Route::group(['middleware' => ['auth']], function () {
 
             Route::get('detail/{id}', [IzinController::class, 'detail'])->name('detail');
             Route::post('edit_status/{id}', [IzinController::class, 'edit_status'])->name('update-status');
+        });
+
+        // Izin
+        Route::prefix('cuti')->name('cuti.')->group(function () {
+            Route::get('/', [CutiController::class, 'index'])->name('index');
+            Route::get('create', [CutiController::class, 'create'])->name('create');
+            Route::post('store', [CutiController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [CutiController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [CutiController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [CutiController::class, 'destroy'])->name('delete');
+
+            Route::get('detail/{id}', [CutiController::class, 'detail'])->name('detail');
+            Route::post('edit_status/{id}', [CutiController::class, 'edit_status'])->name('update-status');
         });
     });
 });

@@ -26,6 +26,22 @@ class Cuti extends Model
         'verified_at'
     ];
 
+    public function applicant() {
+        return $this->belongsTo(Employee::class, 'employee_id_applicant')->with('divisi');
+    }
+
+    public function replacement() {
+        return $this->belongsTo(Employee::class, 'employee_id_replacement')->with('divisi');
+    }
+
+    public function user_decide() {
+        return $this->belongsTo(User::class, 'user_id_decide');
+    }
+
+    public function cuti_type() {
+        return $this->belongsTo(JenisType::class, 'type');
+    }
+
     public function getListCuti($param){
         $conditions = [];
 
@@ -59,5 +75,33 @@ class Cuti extends Model
         }
 
         return $baseQuery->paginate($param['limit'] ?? 10);
+    }
+
+    public function detail($id) {
+        $sql = "SELECT c.*,
+                e.name as name_applicant,
+                e2.name as name_replacement,
+                d.name as divisi_applicant,
+                d2.name as divisi_replacement,
+                j.name as jabatan_applicant,
+                j2.name as jabatan_replacement,
+                e2.name as employee_decide_name,
+                jt.name as type_name
+                FROM cutis c
+                JOIN employees e ON (c.employee_id_applicant = e.id)
+                JOIN employees e2 ON (c.employee_id_replacement = e2.id)
+                JOIN divisi d ON (e.unit_id = d.id)
+                JOIN divisi d2 ON (e2.unit_id = d2.id)
+                LEFT JOIN jabatan j ON (e.jabatan_id = j.id)
+                LEFT JOIN jabatan j2 ON (e2.jabatan_id = j2.id)
+                LEFT JOIN users u ON (c.user_id_decide = u.id)
+                LEFT JOIN employees eu on (u.employee_id = eu.id)
+                LEFT JOIN jenis_types jt on (jt.id = c.type)
+                WHERE c.id = :id
+            ";
+
+        $data = DB::selectOne($sql, ['id' => $id]);
+
+        return $data;
     }
 }
