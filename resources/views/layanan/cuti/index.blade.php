@@ -320,7 +320,16 @@
             $('#id_edit_status').val(id);
             $('#status_cuti').val(status);
 
-            $('#status-cuti-modal').modal('show');
+            if(status == 'Rejected' | status == 'Cancelled') {
+                swal({
+                    title: 'Informasi Status Cuti',
+                    text: 'Status Cuti sudah tidak dapat diubah silahkan ajukan ulang',
+                    icon: 'warning'
+                });
+            } else {
+                $('#status-cuti-modal').modal('show');
+            }
+
         }
 
         function save_edit_status(){

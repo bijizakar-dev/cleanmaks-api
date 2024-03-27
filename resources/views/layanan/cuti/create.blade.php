@@ -48,7 +48,7 @@
                         <h4>Silahkan isi dan lengkapi form dibawah ini : </h4>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('izin.store') }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('cuti.store') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Pegawai Pengaju</label>
@@ -79,6 +79,20 @@
                                 </div>
                             </div>
                             <div class="form-group row mb-4">
+                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tipe</label>
+                                <div class="col-sm-12 col-md-7">
+                                    <select name="type" class="form-control selectric @error('type') is-invalid @enderror">
+                                        <option selected disabled>Pilih Tipe..</option>
+                                        @foreach($type as $key => $val)
+                                            <option value="{{ $val->id }}">{{ $val->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('type')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tanggal Cuti <br/><small>Jika 1 hari input tanggal yang sama*</small></label>
                                 <div class="col-sm-6 col-md-2">
                                     <input type="date" class="form-control @error('start_date') is-invalid @enderror" name="start_date" id="start_date">
@@ -101,20 +115,6 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group row mb-4">
-                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tipe</label>
-                                <div class="col-sm-12 col-md-7">
-                                    <select name="type" class="form-control selectric @error('type') is-invalid @enderror">
-                                        <option selected disabled>Pilih Tipe..</option>
-                                        @foreach($type as $key => $val)
-                                            <option value="{{ $val->id }}">{{ $val->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('type')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
                             <div class="form-group row mb-1">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Alasan</label>
                                 <div class="col-sm-12 col-md-7">
@@ -129,8 +129,8 @@
                                 <div class="col-sm-12 col-md-7">
                                     <div id="image-preview" class="image-preview">
                                         <label for="image-upload" id="image-label">Choose File</label>
-                                        <input type="file" name="image" id="image-upload" style="width: 100px" class="@error('image') is-invalid @enderror"/>
-                                        @error('image')
+                                        <input type="file" name="file" id="image-upload" style="width: 100px" class="@error('file') is-invalid @enderror"/>
+                                        @error('file')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -139,7 +139,7 @@
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3"></label>
                                 <div class="col-sm-12 col-md-7">
-                                    <button class="btn btn-primary">Ajukan Perizinan</button>
+                                    <button class="btn btn-primary">Ajukan Cuti</button>
                                 </div>
                             </div>
                         </form>
@@ -181,15 +181,92 @@
                 }
             }
 
+            // $("#employee_id_applicant").change(function() {
+            //     resetForm();
+            // })
+
             $("#start_date, #end_date").change(function() {
-                var start_date = $("#start_date").val();
-                var end_date = $("#end_date").val();
-                if (start_date != '' && end_date != '') {
-                    total_date = betweenWorkingDate(start_date, end_date);
-                    $("#total").val(total_date);
+                let start_date = $("#start_date").val();
+                let end_date = $("#end_date").val();
+                let id_employee = $("#employee_id_applicant").val();
+
+                if (id_employee == null || id_employee == '') {
+                    swal({
+                        title: 'Informasi',
+                        text: 'Silahkan pilih pegawai pengaju terlebih dahulu',
+                        icon: 'warning',
+                    });
+                    $("#start_date").val('');
+                    $("#end_date").val('');
+                } else {
+                    if (start_date != '' && end_date != '') {
+                        total_day = betweenWorkingDate(start_date, end_date);
+                        $("#total").val(total_day);
+
+                        checkSisaCutiTahunan(id_employee, total_day);
+                    }
                 }
             })
         });
+
+        function resetForm() {
+            $("#employee_id_applicant").val('');
+            $("#employee_id_replacement").val('');
+            $("#start_date").val('');
+            $("#end_date").val('');
+            $("#total").val('');
+            $("#type").val('');
+            $("#reason").val('');
+            $("#file").val('');
+        }
+
+        function checkSisaCutiTahunan(idEmployee, totalDay) {
+            $.ajax({
+                url: 'checkCuti/' + idEmployee,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    if(data.response.status == true) {
+                        if (data.response.data.quota > totalDay) {
+                            iziToast.success({
+                                title: 'Kuota Cuti Tersedia',
+                                message: 'Sisa kuota tersedia : ' + data.response.data.quota,
+                                position: 'topRight'
+                            });
+
+                            $("#total").val(totalDay);
+
+                        } else {
+                            iziToast.warning({
+                                title: 'Kuota Cuti Tidak Cukup',
+                                message: 'Sisa kuota tersedia : ' + data.response.data.quota,
+                                position: 'topRight'
+                            });
+
+                            $("#total").val(0);
+                            $("#start_date").val('');
+                            $("#end_date").val('');
+                        }
+                    } else {
+                        swal({
+                            title: 'Informasi',
+                            text: 'Kouta Cuti belum diatur silahkan atur terlebih dahulu',
+                            icon: 'warning',
+                        });
+                        $("#start_date").val('');
+                        $("#end_date").val('');
+                        $("#total").val('');
+                    }
+                },
+                error: function(xhr){
+                    iziToast.error({
+                        title: 'Gagal Akses Internal',
+                        message: xhr.response,
+                        position: 'topRight'
+                    });
+                }
+            });
+        }
     </script>
 
 @endsection

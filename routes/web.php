@@ -116,6 +116,7 @@ Route::group(['middleware' => ['auth']], function () {
 
             Route::get('detail/{id}', [CutiController::class, 'detail'])->name('detail');
             Route::post('edit_status/{id}', [CutiController::class, 'edit_status'])->name('update-status');
+            Route::get('checkCuti/{id}', [CutiController::class, 'checkCutiTahunan'])->name('check-cuti');
         });
     });
 });

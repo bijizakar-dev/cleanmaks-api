@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Helper\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\Cuti;
+use App\Models\EmployeeCuti;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -17,16 +18,17 @@ class CutiController extends Controller
                 'type' => ['required', 'string'],
                 'start_date' => ['required', 'string'],
                 'end_date' => ['required', 'string'],
-                'file' => ['image', 'mimes:jpeg,png,jpg,gif,svg'],
+                'file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg'],
                 // 'status' => ['required', 'string', 'in:Submitted,Pending,Approved,Rejected,Cancelled']
             ]);
             $user = auth()->user();
 
             $total_day = $this->hitungHariCuti($request->start_date, $request->end_date);
+            $updateKuota = EmployeeCuti::where('employee_id', (!empty($request->employee_id_applicant))?$request->employee_id_applicant : $user->employee_id)->first();
 
             if ($request->hasFile('file')) {
-                $path = $request->file('file')->store('public/files/cuti', 'local'); // Simpan file di dalam direktori storage/app/files/cuti
-                $path = str_replace('public/files/cuti', 'storage/files/cuti', $path); // Ubah path agar sesuai dengan penyimpanan publik
+                $path = $request->file('file')->store('public/file/cuti', 'local'); // Simpan file di dalam direktori storage/app/files/cuti
+                $path = str_replace('public/file/cuti', 'storage/file/cuti', $path); // Ubah path agar sesuai dengan penyimpanan publik
             }
 
             $createCuti = Cuti::create([
@@ -42,7 +44,12 @@ class CutiController extends Controller
                 'status' => 'Submitted' //'Submitted,Pending,Approved,Rejected,Cancelled'
             ]);
 
-            if(!$createCuti) {
+            $updateKuota->update([
+                'quota' => ($updateKuota->quota - $total_day),
+                'quota_used' => ($updateKuota->quota_used + $total_day)
+            ]);
+
+            if(!$createCuti || !$updateKuota) {
                 throw new Exception('Cuti not created');
             }
 
@@ -104,5 +111,28 @@ class CutiController extends Controller
         }
 
         return $total_day;
+    }
+
+    public function checkCutiTahunan($idEmployee) {
+        try {
+            $checkCuti = EmployeeCuti::where('employee_id', $idEmployee)->first();
+
+            if($checkCuti == null) {
+                throw new Exception('Kuota Cuti tidak ditemukan');
+            }
+
+            return ResponseFormatter::success([
+                'status' => true,
+                'msg' => 'Jatah Cuti ditemukan',
+                'data' => $checkCuti
+            ]);
+        } catch (Exception $th) {
+            return ResponseFormatter::error([
+                'status' => false,
+                'msg' => $th->getMessage(),
+                'error' => 'Error Kuota cuti data',
+            ]);
+        }
+
     }
 }

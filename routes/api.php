@@ -43,6 +43,7 @@ Route::prefix('absence')->middleware('auth:sanctum')->name('absence.')->group(fu
 Route::prefix('cuti')->middleware('auth:sanctum')->name('cuti.')->group(function () {
     Route::get('', [CutiController::class, 'fetch'])->name('fetch');
     Route::post('', [CutiController::class, 'create'])->name('create');
+    Route::get('checkCuti/{id}', [CutiController::class, 'checkCutiTahunan'])->name('check-cuti');
 });
 
 // Permit API
