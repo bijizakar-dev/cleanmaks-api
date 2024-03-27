@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Tambah Pegawai')
+@section('title', 'Tambah Cuti')
 
 @section('stylesheet')
     <link rel="stylesheet" href="{{ asset('node_modules/summernote/dist/summernote-bs4.css') }}">
@@ -118,7 +118,7 @@
                             <div class="form-group row mb-1">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Alasan</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <textarea type="text" class="form-control summernote-simple @error('reason') is-invalid @enderror" name="reason" id="reason" placeholder="Alasan pengajuan izin"></textarea>
+                                    <textarea type="text" class="form-control summernote-simple @error('reason') is-invalid @enderror" name="reason" id="reason" placeholder="Alasan pengajuan Cuti"></textarea>
                                     @error('reason')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror

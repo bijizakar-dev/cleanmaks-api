@@ -97,18 +97,19 @@ class CutiController extends Controller
             }
 
             $user = auth()->user();
-            if($status->status == 'Cancelled' || $status->status == 'Rejected') {
+
+            if($statusValue == 'Cancelled' || $statusValue == 'Rejected') {
                 $kuotaCuti->update([
                     'quota' => ($kuotaCuti->quota + $status->total),
                     'quota_used' => ($kuotaCuti->quota_used - $status->total)
                 ]);
-            } else {
-                $status->update([
-                    'status' => $statusValue,
-                    'user_id_decide' => $user->id,
-                    'verified_at' => date('Y-m-d H:i:s')
-                ]);
             }
+
+            $status->update([
+                'status' => $statusValue,
+                'user_id_decide' => $user->id,
+                'verified_at' => date('Y-m-d H:i:s')
+            ]);
 
             return ResponseFormatter::success([
                 'status' => true,
@@ -164,5 +165,21 @@ class CutiController extends Controller
 
         return redirect()->route('cuti.index')->with(['success' => 'Data Pengajuan Cuti berhasil ditambahkan!']);
 
+    }
+
+    public function destroy(string $id)
+    {
+        $cuti = Cuti::findOrFail($id);
+
+        //delete image
+        if($cuti->file != null) {
+            Cuti::delete($cuti->file);
+        }
+
+        //delete post
+        $cuti->delete();
+
+        //redirect to index
+        return redirect()->route('cuti.index')->with(['success' => 'Data Pengajuan Cuti Berhasil Dihapus!']);
     }
 }

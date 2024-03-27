@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Izin')
+@section('title', 'Cuti')
 
 @section('stylesheet')
     <link rel="stylesheet" href="{{ asset('node_modules/jqvmap/dist/jqvmap.min.css') }}">
@@ -93,7 +93,7 @@
                                 <td class="text-center">
                                     <button class="btn btn-info btn-sm" onclick="detail_cuti({{$val->id}})" data-toggle="modal" ><i class="fas fa-eye"></i></button>
                                     <a href={{ url('izin/edit/'.$val->id) }} class="btn btn-success btn-sm"><i class="fas fa-pencil-alt"></i></a>
-                                    <button onclick="confirmDelete('{{ url('izin/delete/'.$val->id) }}')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                    <button onclick="confirmDelete('{{ url('cuti/delete/'.$val->id) }}')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                             @endforeach
@@ -302,8 +302,8 @@
 
         function confirmDelete(url) {
             swal({
-                title: 'Konfirmasi Hapus Perizinan',
-                text: 'Anda akan menghapus perizinan tersebut ?',
+                title: 'Konfirmasi Hapus Pengajuan Cuti',
+                text: 'Anda akan menghapus pengjuan tersebut ?',
                 icon: 'warning',
                 buttons: true,
                 dangerMode: true,
