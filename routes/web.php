@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Layanan\AbsenController;
 use App\Http\Controllers\Layanan\CutiController;
 use App\Http\Controllers\Layanan\IzinController;
 use App\Http\Controllers\Masterdata\DivisiController;
@@ -91,6 +92,19 @@ Route::group(['middleware' => ['auth']], function () {
 
 
         // ===================================== LAYANAN ==================================================
+
+        // Absen
+        Route::prefix('absen')->name('absen.')->group(function () {
+            Route::get('/', [AbsenController::class, 'index'])->name('index');
+            Route::get('create', [AbsenController::class, 'create'])->name('create');
+            Route::post('store', [AbsenController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [AbsenController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [AbsenController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [AbsenController::class, 'destroy'])->name('delete');
+
+            Route::get('detail/{id}', [AbsenController::class, 'detail'])->name('detail');
+            Route::post('edit_status/{id}', [AbsenController::class, 'edit_status'])->name('update-status');
+        });
 
         // Izin
         Route::prefix('izin')->name('izin.')->group(function () {

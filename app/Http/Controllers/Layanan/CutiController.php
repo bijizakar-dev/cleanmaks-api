@@ -167,6 +167,66 @@ class CutiController extends Controller
 
     }
 
+    public function edit(string $id)
+    {
+        $employee = Employee::with('divisi')->get();
+        $type = JenisType::where('category', '=', 'Cuti')
+                ->where('status', '=', '1')
+                ->get();
+
+        $result = Cuti::find($id);
+
+        return view('layanan.cuti.edit', compact('result', 'employee', 'type'));
+    }
+
+    public function update(Request $request, String $id) {
+        $request->validate([
+            'employee_id_applicant' => 'required|integer',
+            'employee_id_replacement' => 'required|integer',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'total' => 'required|integer',
+            'type' => 'required|integer',
+            'reason' => 'required|string',
+            'file' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $total_day = $this->hitungHariCuti($request->input('start_date'), $request->input('end_date'));
+        $checkCuti = EmployeeCuti::where('employee_id', $request->input('employee_id_applicant'))->first();
+
+        $cuti = Cuti::findOrFail($id);
+
+        $data = [
+            'employee_id_applicant' => $request->input('employee_id_applicant'),
+            'employee_id_replacement' => $request->input('employee_id_replacement'),
+            'date' => date('Y-m-d H:i:s'),
+            'type' => $request->input('type'),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
+            'total' => $total_day,
+            'reason' => $request->input('reason'),
+            'status' => 'Submitted'
+        ];
+
+        if($request->hasFile('file')){
+            $path = $request->file('file')->store('public/file/cuti'); // Simpan file di dalam direktori storage/app/files/cuti
+            $path = str_replace('public/file/cuti', 'storage/file/cuti', $path); // Ubah path agar sesuai dengan penyimpanan publik
+
+            $data['file'] = $path;
+        }
+
+        $dataKuotaCuti = [
+            'quota' => ($checkCuti->quota + $cuti->total - $total_day),
+            'quota_used' => ($checkCuti->quota_used - $cuti->total + $total_day)
+        ];
+
+        $cuti->update($data);
+        $checkCuti->update($dataKuotaCuti);
+
+        return redirect()->route('cuti.index')->with(['success' => 'Data Pengajuan Cuti berhasil diubah!']);
+
+    }
+
     public function destroy(string $id)
     {
         $cuti = Cuti::findOrFail($id);

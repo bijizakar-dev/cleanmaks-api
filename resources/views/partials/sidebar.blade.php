@@ -22,7 +22,7 @@
             'url' => '#',
             'icon' => 'fas fa-th-large',
             'submenu' => [
-                ['name' => 'Absensi / Presensi', 'url' => 'absence'],
+                ['name' => 'Absensi / Presensi', 'url' => 'absen'],
                 ['name' => 'Cuti', 'url' => 'cuti'],
                 ['name' => 'Izin', 'url' => 'izin'],
                 ['name' => 'Lembur', 'url' => 'lembur']

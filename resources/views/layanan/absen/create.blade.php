@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Edit Cuti')
+@section('title', 'Tambah Cuti')
 
 @section('stylesheet')
     <link rel="stylesheet" href="{{ asset('node_modules/summernote/dist/summernote-bs4.css') }}">
@@ -32,11 +32,11 @@
         <div class="section-header-back">
             <a href="{{ url('/cuti')}}" class="btn btn-icon"><i class="fas fa-arrow-left"></i></a>
         </div>
-        <h1>Edit Pengajuan Cuti</h1>
+        <h1>Tambah Cuti</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item"><a href="{{ url('/')}}">Dashboard</a></div>
             <div class="breadcrumb-item"><a href="{{ url('/cuti')}}">Cuti</a></div>
-            <div class="breadcrumb-item active">Edit Pengajuan Cuti</div>
+            <div class="breadcrumb-item active">Create Cuti</div>
         </div>
     </div>
 
@@ -48,16 +48,15 @@
                         <h4>Silahkan isi dan lengkapi form dibawah ini : </h4>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('cuti.update', $result->id) }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('cuti.store') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Pegawai Pengaju</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <input type="hidden" name="employee_id_applicant" value="{{ $result->employee_id_applicant }}">
-                                    <select class="form-control select2 @error('employee_id_applicant') is-invalid @enderror" id="employee_id_applicant" disabled>
+                                    <select class="form-control select2 @error('employee_id_applicant') is-invalid @enderror" name="employee_id_applicant" id="employee_id_applicant">
                                         <option selected disabled>Pilih Pegawai..</option>
                                         @foreach($employee as $key => $val)
-                                            <option value="{{ $val->id }}" {{ $result->employee_id_applicant  == $val->id ? 'selected' : '' }}>{{ $val->name }} ( {{$val->divisi->name}})</option>
+                                            <option value="{{ $val->id }}" data-email="{{ $val->email }}">{{ $val->name }} ( {{$val->divisi->name}})</option>
                                         @endforeach
                                     </select>
                                     @error('employee_id_applicant')
@@ -71,7 +70,7 @@
                                     <select class="form-control select2 @error('employee_id_replacement') is-invalid @enderror" name="employee_id_replacement" id="employee_id_replacement">
                                         <option selected disabled>Pilih Pegawai..</option>
                                         @foreach($employee as $key => $val)
-                                            <option value="{{ $val->id }}" {{ $result->employee_id_replacement  == $val->id ? 'selected' : '' }}>{{ $val->name }} ( {{$val->divisi->name}})</option>
+                                            <option value="{{ $val->id }}" data-email="{{ $val->email }}">{{ $val->name }} ( {{$val->divisi->name}})</option>
                                         @endforeach
                                     </select>
                                     @error('employee_id_replacement')
@@ -85,7 +84,7 @@
                                     <select name="type" class="form-control selectric @error('type') is-invalid @enderror">
                                         <option selected disabled>Pilih Tipe..</option>
                                         @foreach($type as $key => $val)
-                                            <option value="{{ $val->id }}" {{ $result->type == $val->id ? 'selected' : '' }}>{{ $val->name }}</option>
+                                            <option value="{{ $val->id }}">{{ $val->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('type')
@@ -96,21 +95,21 @@
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Tanggal Cuti <br/><small>Jika 1 hari input tanggal yang sama*</small></label>
                                 <div class="col-sm-6 col-md-2">
-                                    <input type="date" class="form-control @error('start_date') is-invalid @enderror" name="start_date" id="start_date" value={{ $result->start_date}}>
+                                    <input type="date" class="form-control @error('start_date') is-invalid @enderror" name="start_date" id="start_date">
                                     @error('start_date')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 <label class="col-form-label text-md-center col-12 col-md-3 col-lg-1">s.d</label>
                                 <div class="col-sm-6 col-md-2">
-                                    <input type="date" class="form-control @error('end_date') is-invalid @enderror" name="end_date" id="end_date" value={{ $result->end_date}}>
+                                    <input type="date" class="form-control @error('end_date') is-invalid @enderror" name="end_date" id="end_date">
                                     @error('end_date')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 <label class="col-form-label text-md-center col-12 col-md-3 col-lg-1">Lama</label>
                                 <div class="col-sm-6 col-md-1">
-                                    <input type="number" class="form-control @error('total') is-invalid @enderror" name="total" id="total" readonly value={{ $result->total }}>
+                                    <input type="number" class="form-control @error('total') is-invalid @enderror" name="total" id="total" value="0" readonly>
                                     @error('total')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -119,7 +118,7 @@
                             <div class="form-group row mb-1">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Alasan</label>
                                 <div class="col-sm-12 col-md-7">
-                                    <textarea type="text" class="form-control summernote-simple @error('reason') is-invalid @enderror" name="reason" id="reason" placeholder="Alasan pengajuan Cuti">{{$result->reason}}</textarea>
+                                    <textarea type="text" class="form-control summernote-simple @error('reason') is-invalid @enderror" name="reason" id="reason" placeholder="Alasan pengajuan Cuti"></textarea>
                                     @error('reason')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -129,15 +128,9 @@
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">File Pendukung<br/><small>png, jpg, jpeg*</small></label>
                                 <div class="col-sm-12 col-md-7">
                                     <div id="image-preview" class="image-preview">
-                                        <label for="image-upload" id="image-label">
-                                            @if ($result->file)
-                                                <img src="{{ asset($result->file) }}" alt="Preview" width="100%">
-                                            @else
-                                                Choose File
-                                            @endif
-                                        </label>
-                                        <input type="file" name="file" id="image-upload" class="@error('file') is-invalid @enderror" value="{{$result->file}}"/>
-                                        @error('photo')
+                                        <label for="image-upload" id="image-label">Choose File</label>
+                                        <input type="file" name="file" id="image-upload" style="width: 100px" class="@error('file') is-invalid @enderror"/>
+                                        @error('file')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -180,14 +173,17 @@
                     var reader = new FileReader();
 
                     reader.onload = function(e) {
-                        // Menetapkan sumber gambar pada elemen dengan ID image-preview
                         $("#image-preview").css("background-image", "url(" + e.target.result + ")");
-                        $("#image-label").hide(); // Sembunyikan label "Choose File"
+                        $("#image-label").hide();
                     };
 
                     reader.readAsDataURL(input.files[0]);
                 }
             }
+
+            // $("#employee_id_applicant").change(function() {
+            //     resetForm();
+            // })
 
             $("#start_date, #end_date").change(function() {
                 let start_date = $("#start_date").val();
@@ -210,17 +206,26 @@
                         checkSisaCutiTahunan(id_employee, total_day);
                     }
                 }
-            });
+            })
         });
 
+        function resetForm() {
+            $("#employee_id_applicant").val('');
+            $("#employee_id_replacement").val('');
+            $("#start_date").val('');
+            $("#end_date").val('');
+            $("#total").val('');
+            $("#type").val('');
+            $("#reason").val('');
+            $("#file").val('');
+        }
 
         function checkSisaCutiTahunan(idEmployee, totalDay) {
             $.ajax({
-                url: window.location.origin + '/cuti/checkCuti/' + idEmployee,
+                url: 'checkCuti/' + idEmployee,
                 type: 'GET',
                 dataType: 'json',
                 success: function(data){
-                    console.log(data);
                     if(data.response.status == true) {
                         if (data.response.data.quota > totalDay) {
                             iziToast.success({

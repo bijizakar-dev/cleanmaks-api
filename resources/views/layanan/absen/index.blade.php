@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Cuti')
+@section('title', 'Absen')
 
 @section('stylesheet')
     <link rel="stylesheet" href="{{ asset('node_modules/jqvmap/dist/jqvmap.min.css') }}">
@@ -26,10 +26,10 @@
 
 <section class="section">
     <div class="section-header">
-        <h1>Pengajuan Cuti</h1>
+        <h1>Absensi</h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item"><a href="{{ url('/')}}">Dashboard</a></div>
-            <div class="breadcrumb-item active">Cuti</div>
+            <div class="breadcrumb-item active">Absensi</div>
         </div>
     </div>
 
@@ -57,52 +57,59 @@
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-striped">
-                            <tr>
-                                <th style="width: 3%" class="text-center">No</th>
-                                <th style="width: 23%">Pegawai</th>
-                                <th>Waktu Pengajuan</th>
-                                <th>Tipe</th>
-                                <th style="width: 18%">Tanggal Cuti</th>
-                                <th style="width: 7%" class="text-center">Total</th>
-                                <th style="width: 10%" class="text-center">Status</th>
-                                <th style="width: 15%" class="text-center">Action</th>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th style="width: 3%" class="text-center" rowspan="2">No</th>
+                                    <th style="width: 15%" rowspan="2">Tanggal</th>
+                                    <th style="width: 15%" rowspan="2">Pegawai</th>
+                                    <th style="width: 10%" class="text-center" colspan="2">Clock-In</th>
+                                    <th style="width: 10%" class="text-center" colspan="2">Clock-Out</th>
+                                    <th style="width: 10%" class="text-center" rowspan="2">Status</th>
+                                    <th style="width: 10%" class="text-center" rowspan="2">Lama</th>
+                                    <th style="width: 10%" class="text-center" rowspan="2">Action</th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 10%" >Time</th>
+                                    <th style="width: 10%" >Lokasi</th>
+                                    <th style="width: 10%" >Waktu</th>
+                                    <th style="width: 10%" >Lokasi</th>
+                                </tr>
+                            </thead>
 
-                            {{-- Panggil data employee --}}
-                            @foreach ($result as $val)
-                            <tr>
-                                <td class="p-0 text-center">{{ ($result->currentPage() - 1) * $result->perPage() + $loop->index + 1 }}</td>
-                                <td>{{ $val->applicant->name }} <br/> <small>{{$val->applicant->divisi->name}}</small></td>
-                                <td>{{ date('d/m/Y H:i', strtotime($val->date)) }}</td>
-                                <td>{{ $val->cuti_type->name }}</td>
-                                <td>{{ date('d/m/Y', strtotime($val->start_date)) }} s.d {{date('d/m/Y', strtotime($val->end_date))}} </td>
-                                <td class="text-center">{{ $val->total }}</td>
-                                <td class="text-center">
-                                    @if($val->status == 'Submitted')
-                                        <div type="button" class="badge badge-info" onclick="open_edit_status({{$val->id}}, '{{$val->status}}')"><i class="fa fa-paper-plane"></i> Submitted</div>
-                                    @elseif($val->status == 'Pending')
-                                        <div class="badge badge-warning" onclick="open_edit_status({{$val->id}}, '{{$val->status}}')"><i class="fa fa-spinner fa-spin"></i> Pending</div>
-                                    @elseif($val->status == 'Approved')
-                                        <div class="badge badge-success" onclick="open_edit_status({{$val->id}}, '{{$val->status}}')"><i class="fa fa-check-circle"></i> Approved</div>
-                                    @elseif($val->status == 'Rejected')
-                                        <div class="badge badge-danger" onclick="open_edit_status({{$val->id}}, '{{$val->status}}')"><i class="fas fa-times-circle"></i> Rejected</div>
-                                    @elseif($val->status == 'Cancelled')
-                                        <div class="badge badge-primary" onclick="open_edit_status({{$val->id}}, '{{$val->status}}')"><i class="fas fa-eject"></i> Cancelled</div>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-info btn-sm" onclick="detail_cuti({{$val->id}})" data-toggle="modal" ><i class="fas fa-eye"></i></button>
+                            <tbody>
+                                @foreach ($result as $val)
+                                <tr>
+                                    <td class="p-0 text-center">{{ ($result->currentPage() - 1) * $result->perPage() + $loop->index + 1 }}</td>
+                                    <td>{{ App\Helper\LibHelper::formatTanggalIndo($val->date_clock_in) }}</td>
+                                    <td>{{ $val->name }}</td>
+                                    <td>{{ date('d/m/Y H:i', strtotime($val->date_clock_in)) }}</td>
+                                    <td>{{ $val->in_address }}</td>
+                                    <td>{{ $val->date_clock_out !== null ? date('d/m/Y H:i', strtotime($val->date_clock_out)) : '-' }}</td>
+                                    <td>{{ $val->out_address }}</td>
                                     <?php
-                                        $disable = '';
-                                        if($val->status == 'Cancelled' || $val->status == 'Rejected') {
-                                            $disable = 'disabled';
+                                        $total = '-';
+                                        if($val->date_clock_out !== null) {
+                                            $total = App\Helper\LibHelper::diffDatetime($val->date_clock_in, $val->date_clock_out);
                                         }
                                     ?>
-                                    <button <?= $disable ?> onclick="window.location.href='{{ url('cuti/edit/'.$val->id) }}'" class="btn btn-success btn-sm"><i class="fas fa-pencil-alt"></i></button>
-                                    <button onclick="confirmDelete('{{ url('cuti/delete/'.$val->id) }}')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            @endforeach
+                                    <td>{{ $total }}</td>
+                                    <td class="text-center">
+                                        <div type="button" class="badge badge-info" ><i class="fa fa-paper-plane"></i> Telat</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-info btn-sm" onclick="detail_cuti({{$val->id}})" data-toggle="modal" ><i class="fas fa-eye"></i></button>
+                                        <?php
+                                            $disable = '';
+                                            if($val->status == 'Cancelled' || $val->status == 'Rejected') {
+                                                $disable = 'disabled';
+                                            }
+                                        ?>
+                                        <button <?= $disable ?> onclick="window.location.href='{{ url('cuti/edit/'.$val->id) }}'" class="btn btn-success btn-sm"><i class="fas fa-pencil-alt"></i></button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                            {{-- Panggil data employee --}}
                             {{-- Panggil data employee --}}
 
                         </table>

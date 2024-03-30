@@ -9,7 +9,12 @@ use Illuminate\Support\Facades\DB;
 
 class Absence extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+
+    protected $table = 'absences';
+
+    // Tambahkan ini untuk menonaktifkan soft deletes
+    protected $dates = [];
 
     protected $fillable = [
         'date',
