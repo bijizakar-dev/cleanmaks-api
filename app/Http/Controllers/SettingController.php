@@ -50,9 +50,8 @@ class SettingController extends Controller
             $data['logo'] = $path;
         }
 
-        $setting = Setting::find(2);
+        $setting = Setting::find(1);
         if(!empty($setting)) {
-
             $setting->update($data);
         } else {
             Setting::create($data);
