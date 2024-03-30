@@ -10,6 +10,7 @@ use App\Http\Controllers\Masterdata\EmployeesController;
 use App\Http\Controllers\Masterdata\JabatanController;
 use App\Http\Controllers\Masterdata\JenisTypeController;
 use App\Http\Controllers\Masterdata\UserController;
+use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,6 +36,9 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/setting-app', [SettingController::class, 'index'])->name('setting-app');
+    Route::post('/setting-update', [SettingController::class, 'update'])->name('setting-update');
 
     Route::group(['middleware' => ['isLoginRoles:1']], function () {
 

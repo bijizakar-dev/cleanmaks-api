@@ -20,7 +20,9 @@ class Setting extends Model
         'type',
         'working_hour',
         'code',
-        'status'
+        'status',
+        'time_in',
+        'time_out',
     ];
 
     public static function check_codeqr_setting() {

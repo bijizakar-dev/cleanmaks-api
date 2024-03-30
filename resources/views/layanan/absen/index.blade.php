@@ -59,13 +59,12 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th style="width: 3%" class="text-center" rowspan="2">No</th>
                                     <th style="width: 15%" rowspan="2">Tanggal</th>
                                     <th style="width: 15%" rowspan="2">Pegawai</th>
                                     <th style="width: 10%" class="text-center" colspan="2">Clock-In</th>
                                     <th style="width: 10%" class="text-center" colspan="2">Clock-Out</th>
-                                    <th style="width: 10%" class="text-center" rowspan="2">Status</th>
                                     <th style="width: 10%" class="text-center" rowspan="2">Lama</th>
+                                    <th style="width: 10%" class="text-center" rowspan="2">Status</th>
                                     <th style="width: 10%" class="text-center" rowspan="2">Action</th>
                                 </tr>
                                 <tr>
@@ -79,7 +78,6 @@
                             <tbody>
                                 @foreach ($result as $val)
                                 <tr>
-                                    <td class="p-0 text-center">{{ ($result->currentPage() - 1) * $result->perPage() + $loop->index + 1 }}</td>
                                     <td>{{ App\Helper\LibHelper::formatTanggalIndo($val->date_clock_in) }}</td>
                                     <td>{{ $val->name }}</td>
                                     <td>{{ date('d/m/Y H:i', strtotime($val->date_clock_in)) }}</td>
@@ -88,7 +86,7 @@
                                     <td>{{ $val->out_address }}</td>
                                     <?php
                                         $total = '-';
-                                        if($val->date_clock_out !== null) {
+                                        if($val->date_clock_out != null) {
                                             $total = App\Helper\LibHelper::diffDatetime($val->date_clock_in, $val->date_clock_out);
                                         }
                                     ?>
