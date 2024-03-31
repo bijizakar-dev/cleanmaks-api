@@ -19,14 +19,14 @@ class AbsenController extends Controller
                     $query->from('absences as b')
                         ->selectRaw('MIN(b.date)')
                         ->whereColumn('b.user_id', 'a.user_id')
-                        ->where('b.date', '>', DB::raw('a.date'))
+                        ->where('b.date', '>=', DB::raw('a.date'))
                         ->where('b.type', 'OUT');
                 }, 'date_clock_out')
                 ->selectSub(function ($query) {
                     $query->from('absences as b')
                         ->select('b.address')
                         ->whereColumn('b.user_id', 'a.user_id')
-                        ->where('b.date', '>', DB::raw('a.date'))
+                        ->where('b.date', '>=', DB::raw('a.date'))
                         ->where('b.type', 'OUT')
                         ->limit(1);
                 }, 'out_address')

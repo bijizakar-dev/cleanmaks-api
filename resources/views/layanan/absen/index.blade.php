@@ -92,7 +92,7 @@
                                         if($val->date_clock_out != null) {
                                             $total = App\Helper\LibHelper::diffDatetimeStr($val->date_clock_in, $val->date_clock_out);
                                         }
-                                        $blinker = ($total == 'Belum Pulang') ? 'blinker text-danger' : '';
+                                        $blinker = ($total == 'Belum Pulang') ? 'blinker text-danger font-italic' : '';
                                     ?>
                                     <td><span id="status" class="{{$blinker}}">{{ $total }}</span></td>
                                     <td class="text-center">
