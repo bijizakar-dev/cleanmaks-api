@@ -74,7 +74,7 @@ class Employee extends Model
                         DB::raw("'Cuti' as data_source"),
                         'users.name as user_name',
                         'cutis.date as date',
-                        'cutis.type as type',
+                        'jenis_types.name as type',
                         DB::raw("'' as latitude"),
                         DB::raw("'' as longitude"),
                         DB::raw("IFNULL(cutis.file, '') as image"),
@@ -85,6 +85,7 @@ class Employee extends Model
                         'cutis.status as status',
                         DB::raw("IFNULL(cutis.total, '') as total"))
                     ->leftJoin('cutis', 'users.employee_id', '=', 'cutis.employee_id_applicant')
+                    ->leftJoin('jenis_types', 'cutis.type', '=', 'jenis_types.id')
                     ->when(!empty($param['employee_id']), function ($query) use ($param) {
                         $query->where('users.employee_id', $param['employee_id']);
                     })
@@ -98,7 +99,7 @@ class Employee extends Model
                         DB::raw("'Izin' as data_source"),
                         'users.name as user_name',
                         'permits.date as date',
-                        'permits.type as type',
+                        'jenis_types.name as type',
                         DB::raw("'' as latitude"),
                         DB::raw("'' as longitude"),
                         DB::raw("IFNULL(permits.image, '') as image"),
@@ -109,6 +110,7 @@ class Employee extends Model
                         'permits.status as status',
                         DB::raw("IFNULL(permits.total, '') as total"))
                     ->leftJoin('permits', 'users.employee_id', '=', 'permits.employee_id_applicant')
+                    ->leftJoin('jenis_types', 'permits.type', '=', 'jenis_types.id')
                     ->when(!empty($param['employee_id']), function ($query) use ($param) {
                         $query->where('users.employee_id', $param['employee_id']);
                     })

@@ -49,6 +49,7 @@ Route::prefix('cuti')->middleware('auth:sanctum')->name('cuti.')->group(function
 // Permit API
 Route::prefix('permit')->middleware('auth:sanctum')->name('permit.')->group(function () {
     Route::post('', [PermitController::class, 'create'])->name('create');
+    Route::get('', [PermitController::class, 'fetch'])->name('fetch');
 });
 
 // Masterdata API

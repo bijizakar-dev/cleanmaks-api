@@ -76,4 +76,34 @@ class PermitController extends Controller
 
         return $total_day;
     }
+
+    public function fetch(Request $request) {
+        try {
+            $search = array(
+                'id' => $request->input('id'),
+                'id_employee' => $request->input('id_employee'),
+                'start_date' => $request->input('start_date'),
+                'end_date' => $request->input('end_date'),
+                'type' => $request->input('type'),
+                'status' => $request->input('status'),
+                'limit' => $request->input('limit', 10),
+            );
+
+            $izinInstance = new Permit();
+            $result = $izinInstance->getListPermit($search);
+
+            return ResponseFormatter::success([
+                'status' => true,
+                'msg' => 'Cuti Found',
+                'data' => $result
+            ]);
+
+        } catch (Exception $th) {
+            return ResponseFormatter::error([
+                'status' => false,
+                'msg' => 'Error fetching cuti data',
+                'error' => $th->getMessage(),
+            ]);
+        }
+    }
 }

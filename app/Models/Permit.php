@@ -58,4 +58,39 @@ class Permit extends Model
 
         return $data;
     }
+
+    public function getListPermit($param){
+        $conditions = [];
+
+        $baseQuery = self::select('permits.*', 'ea.name as name_applicant', 'u.name as name_user_decide', 'jt.name as type')
+                ->join('employees as ea', 'permits.employee_id_applicant', '=', 'ea.id')
+                ->join('jenis_types as jt', 'permits.type', '=', 'jt.id')
+                ->leftJoin('users as u', 'u.id', '=', 'permits.user_id_decide')
+                ->orderBy('permits.id');
+
+        //PARAM SEARCH
+        if (!empty($param['id'])) {
+            $conditions[] = "`permits`.`id` = '".$param['id']."'";
+        }
+        if (!empty($param['id_employee'])) {
+            $conditions[] = "`permits`.`employee_id_applicant` = '".$param['id_employee']."'";
+        }
+        if (!empty($param['status'])) {
+            $conditions[] = "`permits`.`status` = '".$param['status']."'";
+        }
+        if (!empty($param['type'])) {
+            $conditions[] = "`permits`.`type` = '".$param['type']."'";
+        }
+        if (!empty($param['start_date']) && !empty($param['end_date'])) {
+            $conditions[] = "`permits`.`date` between '".$param['start_date']." 00:00:00' and '".$param['end_date']." 23:59:59'";
+        }
+
+        //
+        if (!empty($conditions)) {
+            $condition = implode(' AND ', $conditions);
+            $baseQuery->whereRaw($condition);
+        }
+
+        return $baseQuery->paginate($param['limit'] ?? 10);
+    }
 }

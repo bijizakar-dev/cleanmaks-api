@@ -45,9 +45,10 @@ class Cuti extends Model
     public function getListCuti($param){
         $conditions = [];
 
-        $baseQuery = self::select('cutis.*', 'ea.name as name_applicant', 'eb.name as name_replacement', 'u.name as name_user_decide')
+        $baseQuery = self::select('cutis.*', 'ea.name as name_applicant', 'eb.name as name_replacement', 'u.name as name_user_decide', 'jt.name as type')
                 ->join('employees as ea', 'cutis.employee_id_applicant', '=', 'ea.id')
                 ->join('employees as eb', 'cutis.employee_id_replacement', '=', 'eb.id')
+                ->join('jenis_types as jt', 'cutis.type', '=', 'jt.id')
                 ->leftJoin('users as u', 'u.id', '=', 'cutis.user_id_decide')
                 ->orderBy('cutis.id');
 
