@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Layanan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Absence;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +34,8 @@ class AbsenController extends Controller
                 ->orderBy('a.date')
                 ->paginate(10);
 
-        return view('layanan.absen.index', compact('result'));
+        $setting = Setting::find(1);
+
+        return view('layanan.absen.index', compact('result', 'setting'));
     }
 }

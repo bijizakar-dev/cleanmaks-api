@@ -19,6 +19,17 @@
             animation: spin 1s infinite linear;
         }
 
+        @-webkit-keyframes blinker {
+            from { opacity: 1.0; }
+            to { opacity: 0.0; }
+        }
+        .blinker {
+            -webkit-animation-name: blinker;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);
+            -webkit-animation-duration: 1s;
+        }
+
     </style>
 @endsection
 
@@ -59,40 +70,59 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th style="width: 15%" rowspan="2">Tanggal</th>
-                                    <th style="width: 15%" rowspan="2">Pegawai</th>
-                                    <th style="width: 10%" class="text-center" colspan="2">Clock-In</th>
-                                    <th style="width: 10%" class="text-center" colspan="2">Clock-Out</th>
-                                    <th style="width: 10%" class="text-center" rowspan="2">Lama</th>
-                                    <th style="width: 10%" class="text-center" rowspan="2">Status</th>
-                                    <th style="width: 10%" class="text-center" rowspan="2">Action</th>
-                                </tr>
-                                <tr>
-                                    <th style="width: 10%" >Time</th>
-                                    <th style="width: 10%" >Lokasi</th>
-                                    <th style="width: 10%" >Waktu</th>
-                                    <th style="width: 10%" >Lokasi</th>
+                                    <th style="width: 8%" >Tanggal</th>
+                                    <th style="width: 12%" >Pegawai</th>
+                                    <th style="width: 15%" class="text-center" >Clock-In</th>
+                                    <th style="width: 15%" class="text-center" >Clock-Out</th>
+                                    <th style="width: 9%" class="text-center" >Lama</th>
+                                    <th style="width: 10%" class="text-center" >Status</th>
+                                    <th style="width: 8%" class="text-center" >Action</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 @foreach ($result as $val)
                                 <tr>
-                                    <td>{{ App\Helper\LibHelper::formatTanggalIndo($val->date_clock_in) }}</td>
+                                    <td>{{ App\Helper\LibHelper::formatTanggalHari($val->date_clock_in) }}</td>
                                     <td>{{ $val->name }}</td>
-                                    <td>{{ date('d/m/Y H:i', strtotime($val->date_clock_in)) }}</td>
-                                    <td>{{ $val->in_address }}</td>
-                                    <td>{{ $val->date_clock_out !== null ? date('d/m/Y H:i', strtotime($val->date_clock_out)) : '-' }}</td>
-                                    <td>{{ $val->out_address }}</td>
+                                    <td>{{ date('d/m/Y H:i', strtotime($val->date_clock_in)) }} <br/> <small>{{ $val->in_address }}</small></td>
+                                    <td>{{ $val->date_clock_out !== null ? date('d/m/Y H:i', strtotime($val->date_clock_out)) : '-' }}  <br/> <small>{{ $val->out_address }}</small></td>
                                     <?php
-                                        $total = '-';
+                                        $total = 'Belum Pulang';
                                         if($val->date_clock_out != null) {
-                                            $total = App\Helper\LibHelper::diffDatetime($val->date_clock_in, $val->date_clock_out);
+                                            $total = App\Helper\LibHelper::diffDatetimeStr($val->date_clock_in, $val->date_clock_out);
                                         }
+                                        $blinker = ($total == 'Belum Pulang') ? 'blinker' : '';
                                     ?>
-                                    <td>{{ $total }}</td>
+                                    <td><span id="status" class="{{$blinker}}">{{ $total }}</span></td>
                                     <td class="text-center">
-                                        <div type="button" class="badge badge-info" ><i class="fa fa-paper-plane"></i> Telat</div>
+                                        <?php
+                                            $working_hour = strtotime($setting->working_hour)*1000;
+                                            $start_time = strtotime($setting->time_in)*1000;
+                                            $end_time = strtotime($setting->time_out)*1000;
+                                            $valDateClockInTime = strtotime(date('H:i:s', strtotime($val->date_clock_in)))*1000;
+                                            $valTotal = strtotime(App\Helper\LibHelper::diffDatetime($val->date_clock_in, $val->date_clock_out))*1000;
+
+                                            if ($total != 'Belum Pulang') {
+                                                if ($start_time < $valDateClockInTime && $working_hour > $valTotal) {
+                                                    $status = 'Telat & Tidak Memenuhi';
+                                                    $badge = 'warning';
+                                                } else if ($start_time < $valDateClockInTime && $working_hour <= $valTotal) {
+                                                    $status = 'Telat & Memenuhi';
+                                                    $badge = 'secondary';
+                                                } else if ($start_time >= $valDateClockInTime && $working_hour <= $valTotal) {
+                                                    $status = 'Tepat Waktu & Memenuhi';
+                                                    $badge = 'success';
+                                                } else {
+                                                    $status = 'Holiday';
+                                                    $badge = 'primary';
+                                                }
+                                            } else {
+                                                $status = 'Masih Bekerja';
+                                                $badge = 'info';
+                                            }
+                                        ?>
+                                        <div type="button" class="badge badge-{{$badge}}" ><i class="fa fa-paper-plane"></i> {{ $status }}</div>
                                     </td>
                                     <td class="text-center">
                                         <button class="btn btn-info btn-sm" onclick="detail_cuti({{$val->id}})" data-toggle="modal" ><i class="fas fa-eye"></i></button>

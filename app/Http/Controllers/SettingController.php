@@ -23,7 +23,7 @@ class SettingController extends Controller
             'latitude' => 'required|string',
             'longitude' => 'required|string',
             'code' => 'required|string',
-            'working_hour' => 'required|integer',
+            'working_hour' => 'required',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'time_in' => 'required',
             'time_out' => 'required',

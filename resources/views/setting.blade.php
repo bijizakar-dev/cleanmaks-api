@@ -112,7 +112,8 @@
                                 <div class="form-group row align-items-center">
                                     <label for="site-title" class="form-control-label col-sm-3 text-md-right">Jam Kerja</label>
                                     <div class="col-sm-6 col-md-2">
-                                        <input type="number" name="working_hour" class="form-control @error('working_hour') is-invalid @enderror" id="working_hour" value="{{$data->working_hour ?? ''}}" placeholder="Jam Kerja">
+                                        <input type="hidden" name="working_hour" id="working_hour" value="{{$data->working_hour ?? '00:00:00'}}">
+                                        <input type="time" class="form-control @error('working_hour') is-invalid @enderror" id="working_hour_label" value="{{$data->working_hour ?? ''}}" placeholder="Jam Kerja" disabled>
                                         @error('working_hour')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -212,92 +213,17 @@
                 }
             }
 
-            // $("#employee_id_applicant").change(function() {
-            //     resetForm();
-            // })
+            $("#time_in, #time_out").change(function() {
+                let start_work = $("#time_in").val();
+                let end_work = $("#time_out").val();
 
-            $("#start_date, #end_date").change(function() {
-                let start_date = $("#start_date").val();
-                let end_date = $("#end_date").val();
-                let id_employee = $("#employee_id_applicant").val();
-
-                if (id_employee == null || id_employee == '') {
-                    swal({
-                        title: 'Informasi',
-                        text: 'Silahkan pilih pegawai pengaju terlebih dahulu',
-                        icon: 'warning',
-                    });
-                    $("#start_date").val('');
-                    $("#end_date").val('');
-                } else {
-                    if (start_date != '' && end_date != '') {
-                        total_day = betweenWorkingDate(start_date, end_date);
-                        $("#total").val(total_day);
-
-                        checkSisaCutiTahunan(id_employee, total_day);
-                    }
+                if (start_work != '' && end_work != '') {
+                    total_time = betweenTime(start_work, end_work);
+                    $("#working_hour").val(total_time);
+                    $("#working_hour_label").val(total_time);
                 }
-            })
+             });
         });
-
-        function resetForm() {
-            $("#employee_id_applicant").val('');
-            $("#employee_id_replacement").val('');
-            $("#start_date").val('');
-            $("#end_date").val('');
-            $("#total").val('');
-            $("#type").val('');
-            $("#reason").val('');
-            $("#file").val('');
-        }
-
-        function checkSisaCutiTahunan(idEmployee, totalDay) {
-            $.ajax({
-                url: 'checkCuti/' + idEmployee,
-                type: 'GET',
-                dataType: 'json',
-                success: function(data){
-                    if(data.response.status == true) {
-                        if (data.response.data.quota > totalDay) {
-                            iziToast.success({
-                                title: 'Kuota Cuti Tersedia',
-                                message: 'Sisa kuota tersedia : ' + data.response.data.quota,
-                                position: 'topRight'
-                            });
-
-                            $("#total").val(totalDay);
-
-                        } else {
-                            iziToast.warning({
-                                title: 'Kuota Cuti Tidak Cukup',
-                                message: 'Sisa kuota tersedia : ' + data.response.data.quota,
-                                position: 'topRight'
-                            });
-
-                            $("#total").val(0);
-                            $("#start_date").val('');
-                            $("#end_date").val('');
-                        }
-                    } else {
-                        swal({
-                            title: 'Informasi',
-                            text: 'Kouta Cuti belum diatur silahkan atur terlebih dahulu',
-                            icon: 'warning',
-                        });
-                        $("#start_date").val('');
-                        $("#end_date").val('');
-                        $("#total").val('');
-                    }
-                },
-                error: function(xhr){
-                    iziToast.error({
-                        title: 'Gagal Akses Internal',
-                        message: xhr.response,
-                        position: 'topRight'
-                    });
-                }
-            });
-        }
     </script>
 
 @endsection

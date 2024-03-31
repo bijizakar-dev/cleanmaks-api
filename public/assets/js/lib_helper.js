@@ -29,3 +29,19 @@ function betweenWorkingDate(start_date, end_date) {
     return total_day;
 }
 
+function betweenTime(start, end) {
+    var startTime = new Date('1970-01-01T' + start + ':00');
+    var endTime = new Date('1970-01-01T' + end + ':00');
+
+    var timeDiff = endTime - startTime;
+
+    var hours = Math.floor(timeDiff / 3600000);
+    var minutes = Math.floor((timeDiff % 3600000) / 60000);
+    var seconds = Math.floor((timeDiff % 60000) / 1000);
+
+    var formattedHours = ('0' + hours).slice(-2);
+    var formattedMinutes = ('0' + minutes).slice(-2);
+
+    return formattedHours + ':' + formattedMinutes;
+}
+
