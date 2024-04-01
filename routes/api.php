@@ -55,6 +55,7 @@ Route::prefix('permit')->middleware('auth:sanctum')->name('permit.')->group(func
 // Masterdata API
 Route::prefix('masterdata')->middleware('auth:sanctum')->name('masterdata.')->group(function () {
     Route::get('type', [JenisTypeController::class, 'getTypeJenis'])->name('type-jenis');
+    Route::get('employee', [EmployeeController::class, 'getEmployee'])->name('list-employee');
 });
 
 // Setting API

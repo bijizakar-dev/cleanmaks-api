@@ -187,4 +187,39 @@ class EmployeeController extends Controller
         }
     }
 
+    public function getEmployee(Request $request) {
+        try {
+            $search = $request->input('search');
+
+            $employee = Employee::query();
+
+            $employee = Employee::select('employees.name', 'divisi.name as name_divisi', 'jabatan.name as name_jabatan')
+                        ->from('employees')
+                        ->join('jabatan', 'jabatan.id', '=', 'employees.jabatan_id')
+                        ->join('divisi', 'divisi.id', '=', 'employees.unit_id')
+                        ->where('employees.is_verified', '1')
+                        ->orderBy('employees.name');
+
+            if($search != null) {
+                $employee->where(function ($query) use ($search) {
+                    $query->where('employees.name', 'like', '%' . $search . '%')
+                        ->orWhere('divisi.name', 'like', '%' . $search . '%')
+                        ->orWhere('jabatan.name', 'like', '%' . $search . '%');
+                });
+            }
+
+            return ResponseFormatter::success([
+                'status' => true,
+                'msg' => 'List Pegawai Found',
+                'data' => $employee->get()
+            ]);
+
+        } catch (Exception $th) {
+            return ResponseFormatter::error([
+                'status' => false,
+                'msg' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
 }

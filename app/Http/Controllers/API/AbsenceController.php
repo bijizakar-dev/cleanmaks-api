@@ -10,6 +10,7 @@ use App\Models\Employee;
 use App\Models\Setting;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Stevebauman\Location\Facades\Location;
 
 class AbsenceController extends Controller
@@ -83,54 +84,54 @@ class AbsenceController extends Controller
         }
     }
 
-    public function absenceList(Request $request) {
-        $id = $request->input('id');
-        $user_id = $request->input('user_id');
-        $type = $request->input('type');
-        $date_start = ($request->input('date_start') != null) ? $request->input('date_start') : '';
-        $date_end = ($request->input('date_end') != null) ? $request->input('date_end') : '';
-        $limit = $request->input('limit', 10);
+    // public function absenceList(Request $request) {
+    //     $id = $request->input('id');
+    //     $user_id = $request->input('user_id');
+    //     $type = $request->input('type');
+    //     $date_start = ($request->input('date_start') != null) ? $request->input('date_start') : '';
+    //     $date_end = ($request->input('date_end') != null) ? $request->input('date_end') : '';
+    //     $limit = $request->input('limit', 10);
 
-        $absenceQuery = Absence::query();
+    //     $absenceQuery = Absence::query();
 
-        if($id) {
-            $absence = $absenceQuery->find($id);
+    //     if($id) {
+    //         $absence = $absenceQuery->find($id);
 
-            if($absence) {
-                return ResponseFormatter::success([
-                    'status' => true,
-                    'msg' => 'Absence Found',
-                    'data' => $absence
-                ]);
-            }
+    //         if($absence) {
+    //             return ResponseFormatter::success([
+    //                 'status' => true,
+    //                 'msg' => 'Absence Found',
+    //                 'data' => $absence
+    //             ]);
+    //         }
 
-            return ResponseFormatter::error([
-                'status' => false,
-                'msg' => 'Employee not found'
-            ], 500);
-        }
+    //         return ResponseFormatter::error([
+    //             'status' => false,
+    //             'msg' => 'Employee not found'
+    //         ], 500);
+    //     }
 
-        $absences = $absenceQuery;
+    //     $absences = $absenceQuery;
 
-        if($user_id != null && $user_id != '') {
-            $absences->where('user_id', '=', $user_id);
-        }
+    //     if($user_id != null && $user_id != '') {
+    //         $absences->where('user_id', '=', $user_id);
+    //     }
 
-        if($type != null && $type != '') {
-            $absences->where('type', '=', $type);
-        }
+    //     if($type != null && $type != '') {
+    //         $absences->where('type', '=', $type);
+    //     }
 
-        if(($date_start !== '') & ($date_end !== '')) {
-            $absences->whereBetween('date', [$date_start, $date_end]);
-        }
+    //     if(($date_start !== '') & ($date_end !== '')) {
+    //         $absences->whereBetween('date', [$date_start, $date_end]);
+    //     }
 
-        return ResponseFormatter::success([
-            'status' => true,
-            'msg' => 'Absences Found',
-            'data' => $absences->paginate($limit)
-        ]);
+    //     return ResponseFormatter::success([
+    //         'status' => true,
+    //         'msg' => 'Absences Found',
+    //         'data' => $absences->paginate($limit)
+    //     ]);
 
-    }
+    // }
 
     public function radiusAbsence(Request $request) {
         try {
@@ -230,5 +231,73 @@ class AbsenceController extends Controller
                 'msg' => $th->getMessage(),
             ], 500);
         }
+    }
+
+    public function absenceList(Request $request) {
+        $user_id = $request->input('user_id');
+        $date_start = ($request->input('date_start') != null) ? $request->input('date_start') : '';
+        $date_end = ($request->input('date_end') != null) ? $request->input('date_end') : '';
+        $limit = $request->input('limit', 10);
+
+        $setting = Setting::find(1);
+
+        $start_work = strtotime($setting->time_in) * 1000;
+        $end_work = strtotime($setting->time_out) * 1000;
+        $working_hour = strtotime($setting->working_hour) * 1000;
+
+        $absences = Absence::select('a.user_id', 'a.date', 'em.name', 'a.date as date_clock_in', 'a.address as in_address')
+                ->from('absences as a')
+                ->join('users as u', 'a.user_id', '=', 'u.id')
+                ->join('employees as em', 'u.employee_id', '=', 'em.id')
+                ->selectSub(function ($query) {
+                    $query->from('absences as b')
+                        ->selectRaw('MIN(b.date)')
+                        ->whereColumn('b.user_id', 'a.user_id')
+                        ->where('b.date', '>=', DB::raw('a.date'))
+                        ->where('b.type', 'OUT');
+                }, 'date_clock_out')
+                ->selectSub(function ($query) {
+                    $query->from('absences as b')
+                        ->select('b.address')
+                        ->whereColumn('b.user_id', 'a.user_id')
+                        ->where('b.date', '>=', DB::raw('a.date'))
+                        ->where('b.type', 'OUT')
+                        ->limit(1);
+                }, 'out_address')
+                ->selectRaw('TIMEDIFF((SELECT date_clock_out), a.date) as time_difference')
+                ->where('a.type', 'IN')
+                ->orderBy('a.date');
+
+        if($user_id != null && $user_id != '') {
+            $absences->where('a.user_id', '=', $user_id);
+        }
+
+        if(($date_start !== '') & ($date_end !== '')) {
+            $absences->whereBetween('a.date', [$date_start, $date_end]);
+        }
+
+        $result = $absences->paginate($limit);
+
+        foreach ($result as $val) {
+            $val->status = 'Belum Pulang';
+
+            if($val->date_clock_out != null && $val->time_difference != null) {
+                $clockInTime = strtotime(date('H:i:s', strtotime($val->date_clock_in))) * 1000;
+                $diffTime = strtotime($val->time_difference) * 1000;
+                if ($start_work < $clockInTime && $working_hour > $diffTime) {
+                    $val->status = 'Telat & Tidak Memenuhi';
+                } else if ($start_work < $clockInTime && $working_hour <= $diffTime) {
+                    $val->status = 'Telat & Memenuhi';
+                } else if ($start_work >= $clockInTime && $working_hour <= $diffTime) {
+                    $val->status = 'Tepat Waktu & Memenuhi';
+                }
+            }
+
+        }
+        return ResponseFormatter::success([
+            'status' => true,
+            'msg' => 'Absences Found',
+            'data' => $result,
+        ]);
     }
 }
