@@ -6,6 +6,7 @@ use App\Http\Controllers\Layanan\AbsenController;
 use App\Http\Controllers\Layanan\CutiController;
 use App\Http\Controllers\Layanan\IzinController;
 use App\Http\Controllers\Masterdata\DivisiController;
+use App\Http\Controllers\Masterdata\EmployeeScheduleController;
 use App\Http\Controllers\Masterdata\EmployeesController;
 use App\Http\Controllers\Masterdata\JabatanController;
 use App\Http\Controllers\Masterdata\JenisTypeController;
@@ -94,6 +95,15 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('delete/{id}', [JenisTypeController::class, 'destroy'])->name('delete');
         });
 
+        // Jadwal Shift Pegawai
+        Route::prefix('jadwal-shift')->name('jadwal-shift.')->group(function () {
+            Route::get('/', [EmployeeScheduleController::class, 'index'])->name('index');
+            Route::get('create', [EmployeeScheduleController::class, 'create'])->name('create');
+            Route::post('store', [EmployeeScheduleController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [EmployeeScheduleController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [EmployeeScheduleController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [EmployeeScheduleController::class, 'destroy'])->name('delete');
+        });
 
         // ===================================== LAYANAN ==================================================
 

@@ -7,6 +7,8 @@ use App\Http\Controllers\API\EmployeeController;
 use App\Http\Controllers\API\AbsenceController;
 use App\Http\Controllers\API\CutiController;
 use App\Http\Controllers\API\AppController;
+use App\Http\Controllers\API\EmployeeAbsenceController;
+use App\Http\Controllers\API\EmployeeScheduleController;
 use App\Http\Controllers\API\JenisTypeController;
 use App\Http\Controllers\API\PermitController;
 
@@ -37,6 +39,14 @@ Route::prefix('absence')->middleware('auth:sanctum')->name('absence.')->group(fu
 
     Route::get('radiusAbsence', [AbsenceController::class, 'radiusAbsence'])->name('checkLocationAbsence');
     Route::get('checkQr', [AbsenceController::class, 'checkQr'])->name('checkQr');
+});
+
+Route::prefix('absence-v2')->middleware('auth:sanctum')->name('absence-v2.')->group(function () {
+    Route::post('clock', [EmployeeAbsenceController::class, 'clock'])->name('clock');
+    Route::get('list', [EmployeeAbsenceController::class, 'absenceList'])->name('list');
+
+    Route::get('radiusAbsence', [EmployeeAbsenceController::class, 'radiusAbsence'])->name('checkLocationAbsence');
+    Route::get('checkQr', [EmployeeAbsenceController::class, 'checkQr'])->name('checkQr');
 });
 
 // Cuti API
@@ -74,5 +84,6 @@ Route::name('auth.')->group(function () {
         Route::get('user', [UserController::class, 'fetch'])->name('fetch');
     });
 });
+
 
 
