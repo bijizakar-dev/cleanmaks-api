@@ -37,6 +37,7 @@ class EmployeeAbsenceController extends Controller
 
             $user = auth()->user()->id;
             $employee_id = auth()->user()->employee_id;
+            $type = $request->input('type');
 
             $today = now()->toDateString();
             $dayToday = date('l', strtotime($today));
@@ -55,7 +56,11 @@ class EmployeeAbsenceController extends Controller
                 if($dataSchedule == null) {
                     throw new Exception('Tidak terdapat jadwal shift hari ini!');
                 } else {
-                    // Create row absen baru
+                    // Create row absen baru pasti IN Row Baru
+                    if($type == 'OUT') {
+                        throw new Exception('Belum melakukan Clock In');
+                    }
+
                     $dbClock = EmployeeAbsence::create([
                         'date' => $today,
                         'user_id' => $user,
@@ -69,7 +74,6 @@ class EmployeeAbsenceController extends Controller
                     ]);
                 }
             } else {
-                $type = $request->input('type');
                 if($dataAbsence->clock_in != null && $dataAbsence->latitude_longitude_in != '') {
                     if($type == 'IN') {
                         throw new Exception('sudah melakukan Clock In');
@@ -89,6 +93,8 @@ class EmployeeAbsenceController extends Controller
                             $status = 'Telat & Tidak Memenuhi';
                         } else if ($start_work < $clockIn_work && $working_hour <= $total_workingTime) {
                             $status = 'Telat & Memenuhi';
+                        } else if ($start_work >= $clockIn_work && $working_hour > $total_workingTime) {
+                            $status = 'Tepat Waktu & Tidak Memenuhi';
                         } else if ($start_work >= $clockIn_work && $working_hour <= $total_workingTime) {
                             $status = 'Tepat Waktu & Memenuhi';
                         }
@@ -106,7 +112,7 @@ class EmployeeAbsenceController extends Controller
                     if($type == 'OUT') {
                         throw new Exception('Belum melakukan Clock In');
                     } else {
-                        $dbClock = EmployeeAbsence::create([
+                        $dbClock = $dataAbsence->update([
                             'date' => $today,
                             'user_id' => $user,
                             'employee_id' => $employee_id,
@@ -165,12 +171,38 @@ class EmployeeAbsenceController extends Controller
             $data['distance'] = 0;
             $data['status'] = 'In Radius';
             $data['absence'] = 'IN';
+            $data['message'] = '';
 
             $user = auth()->user();
-            $lastAbsence = Absence::last_absence_user($user->id);
-            if(!empty($lastAbsence)) {
-                if($lastAbsence->type != 'OUT') {
+            $employee_id = auth()->user()->employee_id;
+
+            $today = now()->toDateString();
+            $dayToday = date('l', strtotime($today));
+
+            $dataSchedule = EmployeeSchedule::where('employee_id', $employee_id)
+                            ->where('day', $dayToday)
+                            ->first();
+
+            $dataAbsence = EmployeeAbsence::where('date', $today)
+                            ->where('employee_id', $employee_id)
+                            ->first();
+
+            if($dataAbsence == null) {
+                $data['message'] = 'Silahkan Clock In';
+                $data['absence'] = 'IN';
+            } else {
+                if($dataAbsence->clock_in != null && $dataAbsence->clock_out != null) {
+                    $data['message'] = 'Sudah Absen Untuk Hari Ini';
+                    $data['absence'] = '-';
+                } else if ($dataAbsence->clock_in == null && $dataAbsence->clock_out == null) {
+                    $data['message'] = 'Silahkan Clock In';
+                    $data['absence'] = 'IN';
+                } else if ($dataAbsence->clock_out != null && $dataAbsence->clock_out == null) {
+                    $data['message'] = 'Silahkan Clock Out ';
                     $data['absence'] = 'OUT';
+                } else {
+                    $data['message'] = 'Silahkan Clock IN ';
+                    $data['absence'] = 'IN';
                 }
             }
 
