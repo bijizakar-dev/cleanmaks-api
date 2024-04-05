@@ -53,10 +53,6 @@ class DailyAbsenceCreate extends Command
                 if (!$existingAbsence) {
                     $status = 'Belum Absensi';
 
-                    if($hariLibur != null) {
-                        $status = 'Holiday';
-                    }
-
                     if($employeeSchedule != null ) {
                         $dataSchedule = $employeeSchedule;
                     } else {
@@ -114,6 +110,10 @@ class DailyAbsenceCreate extends Command
                         ];
 
                         if($typeSche == 0) {
+                            $status = 'Holiday';
+                        }
+
+                        if($hariLibur != null) {
                             $status = 'Holiday';
                         }
                     }
