@@ -76,6 +76,7 @@ class EmployeeController extends Controller
 
     public function employeeHistory(Request $request) {
         $search = [
+            "user_id" => $request->input('user_id') !== null ? $request->input('user_id') : auth()->user()->id,
             "employee_id" => $request->input('employee_id') !== null ? $request->input('employee_id') : auth()->user()->employee_id,
             "start_date" => $request->input('start_date') !== '' ? $request->input('start_date') : date('Y-m-d'),
             "end_date" => $request->input('end_date') !== '' ? $request->input('end_date') : date('Y-m-d'),

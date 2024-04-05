@@ -42,30 +42,26 @@ class Employee extends Model
     }
 
     function employeeHistory($param) {
-
         $result = DB::table('users')
             ->select(
                 DB::raw("'Absensi' as data_source"),
                 'users.name as user_name',
-                'absences.date as date',
-                'absences.type as type',
-                'absences.latitude as latitude',
-                'absences.longitude as longitude',
-                'absences.image as image',
-                'absences.address as address',
+                'employee_absences_log.date as date',
+                'employee_absences_log.absence as type',
+                DB::raw("'' as image"),
                 DB::raw("'' as start_date"),
                 DB::raw("'' as end_date"),
                 DB::raw("'' as reason"),
                 DB::raw("'' as status"),
                 DB::raw("'' as total"))
-            ->leftJoin('absences', 'users.id', '=', 'absences.user_id')
+            ->leftJoin('employee_absences_log', 'employee_absences_log.user_id', '=', 'users.id')
             ->when(!empty($param['employee_id']), function ($query) use ($param) {
                 $query->where('users.employee_id', $param['employee_id']);
             })
             ->when(!empty($param['start_date']) && !empty($param['end_date']), function ($query) use ($param) {
                 $query->where(function($query) use ($param) {
-                    $query->whereBetween('absences.date', [$param['start_date'], $param['end_date']])
-                        ->orWhereBetween('absences.date', [$param['start_date'].' 00:00:00', $param['end_date'].' 23:59:59']);
+                    $query->whereBetween('employee_absences_log.date', [$param['start_date'], $param['end_date']])
+                        ->orWhereBetween('employee_absences_log.date', [$param['start_date'].' 00:00:00', $param['end_date'].' 23:59:59']);
                 });
             })
             ->unionAll(
@@ -75,10 +71,7 @@ class Employee extends Model
                         'users.name as user_name',
                         'cutis.date as date',
                         'jenis_types.name as type',
-                        DB::raw("'' as latitude"),
-                        DB::raw("'' as longitude"),
                         DB::raw("IFNULL(cutis.file, '') as image"),
-                        DB::raw("'' as address"),
                         'cutis.start_date as start_date',
                         'cutis.end_date as end_date',
                         'cutis.reason as reason',
@@ -100,10 +93,7 @@ class Employee extends Model
                         'users.name as user_name',
                         'permits.date as date',
                         'jenis_types.name as type',
-                        DB::raw("'' as latitude"),
-                        DB::raw("'' as longitude"),
                         DB::raw("IFNULL(permits.image, '') as image"),
-                        DB::raw("'' as address"),
                         'permits.start_date as start_date',
                         'permits.end_date as end_date',
                         'permits.reason as reason',
@@ -119,6 +109,7 @@ class Employee extends Model
                     })
             )
             ->orderBy('date', 'desc')
+            // ->toSql();
             ->paginate(10);
 
 
