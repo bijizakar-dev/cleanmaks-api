@@ -38,8 +38,12 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/setting-app', [SettingController::class, 'index'])->name('setting-app');
-    Route::post('/setting-update', [SettingController::class, 'update'])->name('setting-update');
+    Route::prefix('setting-app')->name('setting.')->group(function () {
+        Route::get('/', [SettingController::class, 'index'])->name('index');
+        Route::post('/update', [SettingController::class, 'update'])->name('setting-update');
+        Route::get('/working-day', [SettingController::class, 'workingDay'])->name('working-day');
+        Route::post('/working-update', [SettingController::class, 'workingUpdate'])->name('working-update');
+    });
 
     Route::group(['middleware' => ['isLoginRoles:1']], function () {
 

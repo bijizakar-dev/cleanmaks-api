@@ -47,9 +47,8 @@
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <tr>
-                                <th style="width: 5%" class="text-center">No</th>
                                 <th >Nama</th>
-                                <th >Hari</th>
+                                <th >Tanggal</th>
                                 <th class="text-center">Jam Masuk</th>
                                 <th class="text-center">Jam Keluar</th>
                                 <th class="text-center">Total</th>
@@ -60,9 +59,9 @@
                             {{-- Panggil data divisi --}}
                             @foreach ($result as $i => $val)
                             <tr>
-                                <td class="p-0 text-center">{{ ($result->currentPage() - 1) * $result->perPage() + $loop->index + 1 }}</td>
                                 <td>{{ $val->employee->name }}</td>
-                                <td>{{ $val->day }}</td>
+                                <td>{{ App\Helper\LibHelper::formatTanggalHari($val->date) }}</td>
+
                                 <td class="text-center">{{ $val->time_start }}</td>
                                 <td class="text-center">{{ $val->time_end }}</td>
                                 <td class="text-center">{{ $val->time_diff }}</td>
@@ -70,7 +69,7 @@
                                     @if($val->status == 'Terjadwal')
                                         <div class="badge badge-info">Terjadwal</div>
                                     @else
-                                        <div class="badge badge-danger">Libur</div>
+                                        <div class="badge badge-success">Absen</div>
                                     @endif
                                 </td>
                                 <td class="text-center">

@@ -42,6 +42,8 @@ class EmployeeAbsenceController extends Controller
             $today = now()->toDateString();
             $dayToday = date('l', strtotime($today));
 
+            $settingApp = Setting::find(1);
+
             $dataSchedule = EmployeeSchedule::where('employee_id', $employee_id)
                             ->where('day', $dayToday)
                             ->first();
@@ -50,29 +52,80 @@ class EmployeeAbsenceController extends Controller
                             ->where('employee_id', $employee_id)
                             ->first();
 
+            //check apakah pegawai mempunyai jadwal hari ini
+            if($dataSchedule == null) {
+                // setting jam kerja mengikuti jam kerja universal
+                switch($dayToday) {
+                    case 'Monday':
+                        $typeSche= $settingApp->monday_type;
+                        $timeStart = $settingApp->monday_in;
+                        $timeEnd = $settingApp->monday_out;
+                        $timeDiff = $settingApp->monday_total;
+                        break;
+                    case 'Tuesday':
+                        $typeSche = $settingApp->tuesday_type;
+                        $timeStart = $settingApp->tuesday_in;
+                        $timeEnd = $settingApp->tuesday_out;
+                        $timeDiff = $settingApp->tuesday_total;
+                        break;
+                    case 'Wednesday':
+                        $typeSche = $settingApp->wednesday_type;
+                        $timeStart = $settingApp->wednesday_in;
+                        $timeEnd = $settingApp->wednesday_out;
+                        $timeDiff = $settingApp->wednesday_total;
+                        break;
+                    case 'Thursday':
+                        $typeSche = $settingApp->thursday_type;
+                        $timeStart = $settingApp->thursday_in;
+                        $timeEnd = $settingApp->thursday_out;
+                        $timeDiff = $settingApp->thursday_total;
+                        break;
+                    case 'Friday':
+                        $typeSche = $settingApp->friday_type;
+                        $timeStart = $settingApp->friday_in;
+                        $timeEnd = $settingApp->friday_out;
+                        $timeDiff = $settingApp->friday_total;
+                        break;
+                    case 'Saturday':
+                        $typeSche = $settingApp->saturday_type;
+                        $timeStart = $settingApp->saturday_in;
+                        $timeEnd = $settingApp->saturday_out;
+                        $timeDiff = $settingApp->saturday_total;
+                        break;
+                    case 'Sunday':
+                        $typeSche = $settingApp->sunday_type;
+                        $timeStart = $settingApp->sunday_in;
+                        $timeEnd = $settingApp->sunday_out;
+                        $timeDiff = $settingApp->sunday_total;
+                        break;
+                }
+
+                $dataSchedule = (object) [
+                    "day" => $dayToday,
+                    "time_start" => $timeStart,
+                    "time_end" => $timeEnd,
+                    "time_diff" => $timeDiff,
+                    "status" => $typeSche,
+                ];
+            }
 
             if($dataAbsence == null) {
-                //check apakah pegawai mempunyai jadwal hari ini
-                if($dataSchedule == null) {
-                    throw new Exception('Tidak terdapat jadwal shift hari ini!');
-                } else {
-                    // Create row absen baru pasti IN Row Baru
-                    if($type == 'OUT') {
-                        throw new Exception('Belum melakukan Clock In');
-                    }
-
-                    $dbClock = EmployeeAbsence::create([
-                        'date' => $today,
-                        'user_id' => $user,
-                        'employee_id' => $employee_id,
-                        'clock_in' => ($request->input('date') != '') ? $request->input('date') : date('Y-m-d H:i:s'),
-                        'location_in' => $request->input('address'),
-                        'latitude_longitude_in' => $request->input('latitude').' / '.$request->input('longitude'),
-                        'image_in' => isset($path) ? $path : '',
-                        'schedule' => json_encode($dataSchedule->toJson(), true),
-                        'status' => 'On Working',
-                    ]);
+                if($type == 'OUT') {
+                    throw new Exception('Belum melakukan Clock In');
                 }
+
+                // Create row absen baru pasti IN Row Baru
+                $dbClock = EmployeeAbsence::create([
+                    'date' => $today,
+                    'user_id' => $user,
+                    'employee_id' => $employee_id,
+                    'clock_in' => ($request->input('date') != '') ? $request->input('date') : date('Y-m-d H:i:s'),
+                    'location_in' => $request->input('address'),
+                    'latitude_longitude_in' => $request->input('latitude').' / '.$request->input('longitude'),
+                    'image_in' => isset($path) ? $path : '',
+                    'schedule' => json_encode($dataSchedule, true),
+                    'status' => 'On Working',
+                ]);
             } else {
                 if($dataAbsence->clock_in != null && $dataAbsence->latitude_longitude_in != '') {
                     if($type == 'IN') {
@@ -120,7 +173,7 @@ class EmployeeAbsenceController extends Controller
                             'location_in' => $request->input('address'),
                             'latitude_longitude_in' => $request->input('latitude').' / '.$request->input('longitude'),
                             'image_in' => isset($path) ? $path : '',
-                            'schedule' => json_encode($dataSchedule->toJson(), true),
+                            'schedule' => json_encode($dataSchedule, true),
                             'status' => 'On Working',
                         ]);
                     }
@@ -178,10 +231,6 @@ class EmployeeAbsenceController extends Controller
 
             $today = now()->toDateString();
             $dayToday = date('l', strtotime($today));
-
-            $dataSchedule = EmployeeSchedule::where('employee_id', $employee_id)
-                            ->where('day', $dayToday)
-                            ->first();
 
             $dataAbsence = EmployeeAbsence::where('date', $today)
                             ->where('employee_id', $employee_id)
@@ -286,42 +335,17 @@ class EmployeeAbsenceController extends Controller
     }
 
     public function absenceList(Request $request) {
-        $user_id = $request->input('user_id');
+        $user_id = $request->input('user_id') != null ? $request->input('user_id') : auth()->user()->id;
         $date_start = ($request->input('date_start') != null) ? $request->input('date_start') : '';
         $date_end = ($request->input('date_end') != null) ? $request->input('date_end') : '';
         $limit = $request->input('limit', 10);
 
-        $setting = Setting::find(1);
-
-        $start_work = strtotime($setting->time_in) * 1000;
-        $end_work = strtotime($setting->time_out) * 1000;
-        $working_hour = strtotime($setting->working_hour) * 1000;
-
-        $absences = Absence::select('a.user_id', 'a.date', 'em.name', 'a.date as date_clock_in', 'a.address as in_address')
-                ->from('absences as a')
-                ->join('users as u', 'a.user_id', '=', 'u.id')
-                ->join('employees as em', 'u.employee_id', '=', 'em.id')
-                ->selectSub(function ($query) {
-                    $query->from('absences as b')
-                        ->selectRaw('MIN(b.date)')
-                        ->whereColumn('b.user_id', 'a.user_id')
-                        ->where('b.date', '>=', DB::raw('a.date'))
-                        ->where('b.type', 'OUT');
-                }, 'date_clock_out')
-                ->selectSub(function ($query) {
-                    $query->from('absences as b')
-                        ->select('b.address')
-                        ->whereColumn('b.user_id', 'a.user_id')
-                        ->where('b.date', '>=', DB::raw('a.date'))
-                        ->where('b.type', 'OUT')
-                        ->limit(1);
-                }, 'out_address')
-                ->selectRaw('TIMEDIFF((SELECT date_clock_out), a.date) as time_difference')
-                ->where('a.type', 'IN')
-                ->orderBy('a.date');
+        $absences = EmployeeAbsence::select('em.name as employee_name', 'ea.*')
+                    ->from('employee_absences as ea')
+                    ->join('employees as em', 'ea.employee_id', '=', 'em.id');
 
         if($user_id != null && $user_id != '') {
-            $absences->where('a.user_id', '=', $user_id);
+            $absences->where('user_id', '=', $user_id);
         }
 
         if(($date_start !== '') & ($date_end !== '')) {
@@ -331,21 +355,11 @@ class EmployeeAbsenceController extends Controller
         $result = $absences->paginate($limit);
 
         foreach ($result as $val) {
-            $val->status = 'Belum Pulang';
+            $decodeSche = json_decode($val->schedule);
 
-            if($val->date_clock_out != null && $val->time_difference != null) {
-                $clockInTime = strtotime(date('H:i:s', strtotime($val->date_clock_in))) * 1000;
-                $diffTime = strtotime($val->time_difference) * 1000;
-                if ($start_work < $clockInTime && $working_hour > $diffTime) {
-                    $val->status = 'Telat & Tidak Memenuhi';
-                } else if ($start_work < $clockInTime && $working_hour <= $diffTime) {
-                    $val->status = 'Telat & Memenuhi';
-                } else if ($start_work >= $clockInTime && $working_hour <= $diffTime) {
-                    $val->status = 'Tepat Waktu & Memenuhi';
-                }
-            }
-
+            $val->schedule = $decodeSche;
         }
+
         return ResponseFormatter::success([
             'status' => true,
             'msg' => 'Absences Found',

@@ -37,14 +37,14 @@ class EmployeeScheduleController extends Controller
     {
         $request->validate([
             'employee_id' => 'required|integer',
-            'day' => 'required|string',
+            'date' => 'required|string',
             'time_start' => 'nullable',
             'time_end' => 'nullable',
             'time_diff' => 'nullable',
         ]);
 
         $jadwalShift = EmployeeSchedule::where('employee_id', $request->input('employee_id'))
-                    ->where('day', $request->input('day'))->get();
+                    ->whereDate('date', $request->input('date'))->get();
 
         //check data sudah ada jadwal apa belum
         if(count($jadwalShift) != 0) {
@@ -53,13 +53,12 @@ class EmployeeScheduleController extends Controller
 
         $status = 'Terjadwal';
 
-        if($request->input('time_start') == '' && $request->input('time_end') == '') {
-            $status = 'Holiday';
-        }
+        $dateDay = date('l', strtotime($request->input('date')));
 
         EmployeeSchedule::create([
             'employee_id' => $request->input('employee_id'),
-            'day' => $request->input('day'),
+            'date' => $request->input('date'),
+            'day' => $dateDay,
             'time_start' => $request->input('time_start'),
             'time_end' => $request->input('time_end'),
             'time_diff' => $request->input('time_diff'),

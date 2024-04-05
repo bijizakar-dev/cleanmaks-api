@@ -50,7 +50,11 @@
                             <div class="form-group row mb-4">
                                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Hari<small>*</small></label>
                                 <div class="col-sm-12 col-md-8">
-                                    <select class="form-control selectric @error('day') is-invalid @enderror" name="day">
+                                    <input type="date" class="form-control @error('date') is-invalid @enderror" name="date" id="date">
+                                    @error('date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    {{-- <select class="form-control selectric @error('day') is-invalid @enderror" name="day">
                                         <option selected disabled>Pilih Hari</option>
                                         <option value='Monday'>Senin</option>
                                         <option value='Tuesday'>Selasa</option>
@@ -62,7 +66,8 @@
                                     </select>
                                     @error('status')
                                         <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    @enderror --}}
+
                                 </div>
                             </div>
                             <div class="form-group row mb-4">

@@ -12,6 +12,7 @@ class EmployeeSchedule extends Model
 
     protected $fillable = [
         'employee_id',
+        'date',
         'day',
         'time_start',
         'time_end',
