@@ -48,6 +48,15 @@ class Employee extends Model
                 'users.name as user_name',
                 'employee_absences_log.date as date',
                 'employee_absences_log.absence as type',
+
+                'employee_absences.location_in as location_in',
+                'employee_absences.latitude_longitude_in as latitude_longitude_in',
+                'employee_absences.image_in as image_in',
+
+                'employee_absences.location_out as location_out',
+                'employee_absences.latitude_longitude_out as latitude_longitude_out',
+                'employee_absences.image_out as image_out',
+
                 DB::raw("'' as image"),
                 DB::raw("'' as start_date"),
                 DB::raw("'' as end_date"),
@@ -55,6 +64,7 @@ class Employee extends Model
                 DB::raw("'' as status"),
                 DB::raw("'' as total"))
             ->leftJoin('employee_absences_log', 'employee_absences_log.user_id', '=', 'users.id')
+            ->join('employee_absences', 'employee_absences.id', '=', 'employee_absences_log.employee_absences_id')
             ->when(!empty($param['employee_id']), function ($query) use ($param) {
                 $query->where('users.employee_id', $param['employee_id']);
             })
@@ -71,6 +81,12 @@ class Employee extends Model
                         'users.name as user_name',
                         'cutis.date as date',
                         'jenis_types.name as type',
+                        DB::raw("'' as location_in"),
+                        DB::raw("'' as latitude_longitude_in"),
+                        DB::raw("'' as image_in"),
+                        DB::raw("'' as location_out"),
+                        DB::raw("'' as latitude_longitude_out"),
+                        DB::raw("'' as image_out"),
                         DB::raw("IFNULL(cutis.file, '') as image"),
                         'cutis.start_date as start_date',
                         'cutis.end_date as end_date',
@@ -93,6 +109,12 @@ class Employee extends Model
                         'users.name as user_name',
                         'permits.date as date',
                         'jenis_types.name as type',
+                        DB::raw("'' as location_in"),
+                        DB::raw("'' as latitude_longitude_in"),
+                        DB::raw("'' as image_in"),
+                        DB::raw("'' as location_out"),
+                        DB::raw("'' as latitude_longitude_out"),
+                        DB::raw("'' as image_out"),
                         DB::raw("IFNULL(permits.image, '') as image"),
                         'permits.start_date as start_date',
                         'permits.end_date as end_date',
