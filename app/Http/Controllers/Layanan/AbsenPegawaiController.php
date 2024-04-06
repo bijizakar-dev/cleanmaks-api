@@ -38,7 +38,7 @@ class AbsenPegawaiController extends Controller
     // }
 
     public function index(Request $request) {
-        $absen = EmployeeAbsence::select()
+        $absen = EmployeeAbsence::select('e.name as employee_name', 'a.*')
                 ->from('employee_absences as a')
                 ->join('employees as e', 'e.id', '=', 'employee_id');
 
@@ -49,6 +49,7 @@ class AbsenPegawaiController extends Controller
             $val->schedule = $decodeSche;
         }
 
-        return view('layanan.absen.index', compact($result));
+        return view('layanan.absen.index', compact('result'));
+
     }
 }

@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('absence:daily-create')
-                 ->cron('*/5 * * * *');
+                ->dailyAt('01:00');
     }
 
     /**

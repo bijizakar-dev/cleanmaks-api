@@ -83,46 +83,43 @@
                             <tbody>
                                 @foreach ($result as $val)
                                 <tr>
-                                    <td>{{ App\Helper\LibHelper::formatTanggalHari($val->date_clock_in) }}</td>
-                                    <td>{{ $val->name }}</td>
-                                    <td>{{ date('d/m/Y H:i', strtotime($val->date_clock_in)) }} <br/> <small>{{ $val->in_address }}</small></td>
-                                    <td>{{ $val->date_clock_out !== null ? date('d/m/Y H:i', strtotime($val->date_clock_out)) : '-' }}  <br/> <small>{{ $val->out_address }}</small></td>
+                                    <td>{{ App\Helper\LibHelper::formatTanggalHari($val->date) }}</td>
+                                    <td>{{ $val->employee_name }}</td>
+                                    <td>{{ $val->clock_in !== null ? date('d/m/Y H:i', strtotime($val->clock_in)) : '-' }}  <br/> <small>{{ $val->location_in }}</small></td>
+                                    <td>{{ $val->clock_out !== null ? date('d/m/Y H:i', strtotime($val->clock_out)) : '-' }}  <br/> <small>{{ $val->location_out }}</small></td>
                                     <?php
-                                        $total = 'Belum Pulang';
-                                        if($val->date_clock_out != null) {
-                                            $total = App\Helper\LibHelper::diffDatetimeStr($val->date_clock_in, $val->date_clock_out);
+                                        $total_hours = $val->total_hour;
+                                        $blinker = '';
+
+                                        if($val->status == 'Belum Absensi') {
+                                            $total_hours = 'Belum Absen';
+                                            $blinker = 'blinker text-warning font-italic';
+                                        } else if ($val->status == 'On Working') {
+                                            $total_hours = 'Belum Pulang';
+                                            $blinker = 'blinker text-danger font-italic';
                                         }
-                                        $blinker = ($total == 'Belum Pulang') ? 'blinker text-danger font-italic' : '';
+                                        // $blinker = ($val->status == 'On Working') ? 'blinker text-danger font-italic' : '';
                                     ?>
-                                    <td><span id="status" class="{{$blinker}}">{{ $total }}</span></td>
+                                    <td><span id="status" class="{{$blinker}}">{{ $total_hours }}</span></td>
                                     <td class="text-center">
                                         <?php
-                                            $working_hour = strtotime($setting->working_hour)*1000;
-                                            $start_time = strtotime($setting->time_in)*1000;
-                                            $end_time = strtotime($setting->time_out)*1000;
-                                            $valDateClockInTime = strtotime(date('H:i:s', strtotime($val->date_clock_in)))*1000;
-                                            $valTotal = strtotime(App\Helper\LibHelper::diffDatetime($val->date_clock_in, $val->date_clock_out))*1000;
-
-                                            if ($total != 'Belum Pulang') {
-                                                if ($start_time < $valDateClockInTime && $working_hour > $valTotal) {
-                                                    $status = 'Telat & Tidak Memenuhi';
-                                                    $badge = 'warning';
-                                                } else if ($start_time < $valDateClockInTime && $working_hour <= $valTotal) {
-                                                    $status = 'Telat & Memenuhi';
-                                                    $badge = 'secondary';
-                                                } else if ($start_time >= $valDateClockInTime && $working_hour <= $valTotal) {
-                                                    $status = 'Tepat Waktu & Memenuhi';
-                                                    $badge = 'success';
-                                                } else {
-                                                    $status = 'Holiday';
-                                                    $badge = 'primary';
-                                                }
-                                            } else {
-                                                $status = 'Masih Bekerja';
+                                            if ($val->status == "Telat & Tidak Memenuhi") {
+                                                $badge = 'warning';
+                                            } else if ($val->status == "Telat & Memenuhi") {
+                                                $badge = 'secondary';
+                                            } else if ($val->status == "Tepat Waktu & Memenuhi") {
+                                                $badge = 'success';
+                                            } else if ($val->status == "Tepat Waktu & Tidak Memenuhi") {
                                                 $badge = 'info';
+                                            } else if ($val->status == "Belum Absensi") {
+                                                $badge = 'danger';
+                                            } else if ($val->status == "Holiday") {
+                                                $badge = 'danger';
+                                            } else {
+                                                $badge = 'primary';
                                             }
                                         ?>
-                                        <div type="button" class="badge badge-{{$badge}}" ><i class="fa fa-paper-plane"></i> {{ $status }}</div>
+                                        <div type="button" class="badge badge-{{$badge}}" >{{ $val->status }}</div>
                                     </td>
                                     <td class="text-center">
                                         <button class="btn btn-info btn-sm" onclick="detail_cuti({{$val->id}})" data-toggle="modal" ><i class="fas fa-eye"></i></button>
