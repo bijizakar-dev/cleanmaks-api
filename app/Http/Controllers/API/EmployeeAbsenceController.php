@@ -237,20 +237,20 @@ class EmployeeAbsenceController extends Controller
                             ->first();
 
             if($dataAbsence == null) {
-                $data['message'] = 'Silahkan Clock In';
+                $data['message'] = 'Silahkan Clock In 3';
                 $data['absence'] = 'IN';
             } else {
                 if($dataAbsence->clock_in != null && $dataAbsence->clock_out != null) {
                     $data['message'] = 'Sudah Absen Untuk Hari Ini';
                     $data['absence'] = '-';
                 } else if ($dataAbsence->clock_in == null && $dataAbsence->clock_out == null) {
-                    $data['message'] = 'Silahkan Clock In';
+                    $data['message'] = 'Silahkan Clock In 1';
                     $data['absence'] = 'IN';
                 } else if ($dataAbsence->clock_out != null && $dataAbsence->clock_out == null) {
                     $data['message'] = 'Silahkan Clock Out ';
                     $data['absence'] = 'OUT';
                 } else {
-                    $data['message'] = 'Silahkan Clock IN ';
+                    $data['message'] = 'Silahkan Clock IN 2';
                     $data['absence'] = 'IN';
                 }
             }
