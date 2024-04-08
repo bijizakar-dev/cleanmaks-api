@@ -138,7 +138,7 @@ class EmployeeAbsenceController extends Controller
                         $clockIn_work = strtotime(date('H:i:s', strtotime($dataAbsence->clock_in))) * 1000;
                         $clockOut_work = strtotime(date('H:i:s', strtotime($clockOut))) * 1000;
 
-                        $total_workingTime = $clockOut_work - $clockIn_work;
+                        $total_workingTime = ($clockOut_work - $clockIn_work) / 1000;
 
                         $status = 'On Working';
 
@@ -157,7 +157,7 @@ class EmployeeAbsenceController extends Controller
                             'location_out' => $request->input('address'),
                             'latitude_longitude_out' => $request->input('latitude').' / '.$request->input('longitude'),
                             'image_out' => isset($path) ? $path : '',
-                            'total_hour' => gmdate('H:i:s', $total_workingTime / 1000),
+                            'total_hour' => gmdate('H:i:s', $total_workingTime),
                             'status' => $status,
                         ]);
                     }
