@@ -131,24 +131,24 @@ class EmployeeAbsenceController extends Controller
                     if($type == 'IN') {
                         throw new Exception('sudah melakukan Clock In');
                     } else {
-                        $working_hour = strtotime($dataSchedule->time_diff) * 1000;
-                        $start_work = strtotime($dataSchedule->time_start) * 1000 ;
+                        $working_hour = strtotime($dataSchedule->time_diff);
+                        $start_work = strtotime($dataSchedule->time_start);
 
                         $clockOut = ($request->input('date') != '') ? $request->input('date') : date('Y-m-d H:i:s');
-                        $clockIn_work = strtotime(date('H:i:s', strtotime($dataAbsence->clock_in))) * 1000;
-                        $clockOut_work = strtotime(date('H:i:s', strtotime($clockOut))) * 1000;
+                        $clockIn_work = strtotime(date('H:i:s', strtotime($dataAbsence->clock_in)));
+                        $clockOut_work = strtotime(date('H:i:s', strtotime($clockOut)));
 
-                        $total_workingTime = ($clockOut_work - $clockIn_work) / 1000;
+                        $total_workingTime = ($clockOut_work - $clockIn_work);
 
                         $status = 'On Working';
 
-                        if ($start_work < $clockIn_work && $working_hour > $total_workingTime) {
-                            $status = 'Telat & Tidak Memenuhi';
-                        } else if ($start_work < $clockIn_work && $working_hour <= $total_workingTime) {
+                        if (date('H:i:s', $start_work) < date('H:i:s', $clockIn_work) && date('H:i:s', $working_hour) <= date('H:i:s', $total_workingTime)) {
                             $status = 'Telat & Memenuhi';
-                        } else if ($start_work >= $clockIn_work && $working_hour > $total_workingTime) {
+                        } else if (date('H:i:s', $start_work) < date('H:i:s', $clockIn_work) && date('H:i:s', $working_hour) > date('H:i:s', $total_workingTime)) {
+                            $status = 'Telat & Tidak Memenuhi';
+                        } else if (date('H:i:s', $start_work) >= date('H:i:s', $clockIn_work) && date('H:i:s', $working_hour) > date('H:i:s', $total_workingTime)) {
                             $status = 'Tepat Waktu & Tidak Memenuhi';
-                        } else if ($start_work >= $clockIn_work && $working_hour <= $total_workingTime) {
+                        } else if (date('H:i:s', $start_work) >= date('H:i:s', $clockIn_work) && date('H:i:s', $working_hour) <= date('H:i:s', $total_workingTime)) {
                             $status = 'Tepat Waktu & Memenuhi';
                         }
 
