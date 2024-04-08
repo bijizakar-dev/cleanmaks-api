@@ -115,7 +115,7 @@ class DailyAbsenceCreate extends Command
 
                         if($hariLibur != null) {
                             $status = 'Holiday';
-                            $dataSchedule->status = $hariLibur->name;
+                            $dataSchedule->day = $hariLibur->name;
                         }
                     }
 
