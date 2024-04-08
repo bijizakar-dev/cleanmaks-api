@@ -17,31 +17,41 @@ class UserController extends Controller
         try {
             //validate request
             $request->validate([
-                'email' => 'required|email',
+                'email' => 'required',
                 'password' => 'required',
             ]);
 
+            $user = User::where('name', $request->email)
+                    ->orWhere('email', $request->email)
+                    ->first();
+
+            if (!$user) {
+                throw new Exception('Email / Username salah, silahkan periksa kembali');
+            }
+
+            if ($user->status != '1') {
+                throw new Exception('Akun tidak aktif, silahkan hubungi admin');
+            }
+
+            if (!Auth::attempt(['email' => $request->email, 'password' => $request->password]) && !Auth::attempt(['name' => $request->email, 'password' => $request->password])) {
+                throw new Exception('Password salah, silahkan periksa kembali');
+            }
+
             //find user by email
-            $credentials = request(['email', 'password']); //get data request
+            // $credentials = request(['email', 'password']); //get data request
 
-            //check credential
-            if(!Auth::attempt($credentials)) {
-                return ResponseFormatter::error([
-                    'status' => false,
-                    'msg' => 'Unauthorized'
-                ], 401);
-            }
-
-            $user = User::where('email', $request->email)->first();
-            if(!Hash::check($request->password, $user->password)) {
-                throw new Exception('Invalid password');
-            }
+            $m_user = new User;
+            $data_user = $m_user->getUserEmployee($user->id);
 
             //generate token
             $tokenResult = $user->createToken('authToken')->plainTextToken;
 
-            $m_user = new User;
-            $data_user = $m_user->getUserEmployee($user->id);
+            session([
+                'authToken' => $tokenResult,
+                'employee' => $data_user
+            ]);
+
+            $user =  Auth::user();
 
             //return response
             return ResponseFormatter::success([
@@ -54,7 +64,7 @@ class UserController extends Controller
         } catch (Exception $th) {
             return ResponseFormatter::error([
                 'status' => false,
-                'msg' => 'Authentication failed with error: ' . $th->getMessage(),
+                'msg' => $th->getMessage(),
             ]);
         }
     }
