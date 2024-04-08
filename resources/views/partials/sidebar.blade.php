@@ -16,6 +16,7 @@
                 ['name' => 'Jabatan', 'url' => 'jabatan'],
                 ['name' => 'Tipe Jenis', 'url' => 'jenis-type'],
                 ['name' => 'Jadwal Pegawai', 'url' => 'jadwal-shift'],
+                ['name' => 'Hari Libur', 'url' => 'hari-libur'],
             ],
         ],
         [

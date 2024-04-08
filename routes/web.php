@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\Layanan\AbsenController;
 use App\Http\Controllers\Layanan\AbsenPegawaiController;
 use App\Http\Controllers\Layanan\CutiController;
@@ -108,6 +109,16 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('edit/{id}', [EmployeeScheduleController::class, 'edit'])->name('edit');
             Route::post('update/{id}', [EmployeeScheduleController::class, 'update'])->name('update');
             Route::get('delete/{id}', [EmployeeScheduleController::class, 'destroy'])->name('delete');
+        });
+
+        // Hari Libur
+        Route::prefix('hari-libur')->name('hari-libur.')->group(function () {
+            Route::get('/', [HolidayController::class, 'index'])->name('index');
+            Route::get('create', [HolidayController::class, 'create'])->name('create');
+            Route::post('store', [HolidayController::class, 'store'])->name('store');
+            Route::post('edit/{id}', [HolidayController::class, 'edit'])->name('edit');
+            Route::get('delete/{id}', [HolidayController::class, 'destroy'])->name('delete');
+            Route::get('hit-api-holiday', [HolidayController::class, 'getHariLiburFromAPI'])->name('hit-api-holiday');
         });
 
         // ===================================== LAYANAN ==================================================
