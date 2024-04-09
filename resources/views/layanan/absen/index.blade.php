@@ -70,8 +70,8 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th style="width: 8%" >Tanggal</th>
-                                    <th style="width: 12%" >Pegawai</th>
+                                    <th style="width: 10%" >Tanggal</th>
+                                    <th style="width: 15%" >Pegawai</th>
                                     <th style="width: 15%" class="text-center" >Clock-In</th>
                                     <th style="width: 15%" class="text-center" >Clock-Out</th>
                                     <th style="width: 9%" class="text-center" >Lama</th>
@@ -85,8 +85,8 @@
                                 <tr>
                                     <td>{{ App\Helper\LibHelper::formatTanggalHari($val->date) }}</td>
                                     <td>{{ $val->employee_name }}</td>
-                                    <td>{{ $val->clock_in !== null ? date('d/m/Y H:i', strtotime($val->clock_in)) : '-' }}  <br/> <small>{{ $val->location_in }}</small></td>
-                                    <td>{{ $val->clock_out !== null ? date('d/m/Y H:i', strtotime($val->clock_out)) : '-' }}  <br/> <small>{{ $val->location_out }}</small></td>
+                                    <td>{{ $val->clock_in !== null ? date('d/m/Y H:i', strtotime($val->clock_in)) : '-' }}</td>
+                                    <td>{{ $val->clock_out !== null ? date('d/m/Y H:i', strtotime($val->clock_out)) : '-' }}</td>
                                     <?php
                                         $total_hours = $val->total_hour;
                                         $blinker = '';
