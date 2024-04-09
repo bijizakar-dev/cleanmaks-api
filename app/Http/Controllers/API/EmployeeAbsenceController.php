@@ -46,6 +46,7 @@ class EmployeeAbsenceController extends Controller
 
             $dataSchedule = EmployeeSchedule::where('employee_id', $employee_id)
                             ->where('day', $dayToday)
+                            ->where('date', $today)
                             ->first();
 
             $dataAbsence = EmployeeAbsence::where('date', $today)
