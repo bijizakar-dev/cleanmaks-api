@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Helper\LibHelper;
 use App\Helper\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AbsencesRequest;
@@ -12,6 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Stevebauman\Location\Facades\Location;
+use Intervention\Image\ImageManagerStatic;
 
 class AbsenceController extends Controller
 {

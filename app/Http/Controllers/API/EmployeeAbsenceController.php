@@ -15,7 +15,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Stevebauman\Location\Facades\Location;
+use Intervention\Image\ImageManagerStatic;
 
 class EmployeeAbsenceController extends Controller
 {
@@ -26,12 +28,15 @@ class EmployeeAbsenceController extends Controller
                 'latitude' => ['required', 'string'],
                 'longitude' => ['required', 'string'],
                 'address' => ['required', 'string'],
-                'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg'],
+                'image' => ['required'],
                 'type' => ['required', 'string', 'in:IN,OUT']
             ]);
 
             if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('public/photos/absences');
+                $imageCom = ImageManagerStatic::make($request->file('image'))->encode('jpg', 50);
+                $path = 'public/photos/absences/' . uniqid() . '.jpg';
+                Storage::disk('local')->put($path, $imageCom->stream());
+
                 $path = str_replace('public/photos/absences', 'storage/photos/absences', $path);
             }
 

@@ -9,6 +9,7 @@ use App\Models\EmployeeCuti;
 use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic;
 
 class EmployeesController extends Controller
 {
@@ -48,8 +49,12 @@ class EmployeesController extends Controller
         ]);
 
         if($request->hasFile('photo')){
-            $path = $request->file('photo')->store('public/photos/employees'); // Simpan file di dalam direktori storage/app/files/cuti
-            $path = str_replace('public/photos/employees', 'storage/photos/employees', $path); // Ubah path agar sesuai dengan penyimpanan publik
+            $imageCom = ImageManagerStatic::make($request->file('photo'))->encode('jpg', 50);
+            $path = 'public/photos/employees/' . uniqid() . '.jpg';
+            Storage::disk('local')->put($path, $imageCom->stream());
+
+            $path = str_replace('public/photos/employees', 'storage/photos/employees', $path);
+
         }
 
         Employee::create([
@@ -112,8 +117,11 @@ class EmployeesController extends Controller
         ];
 
         if($request->hasFile('photo')){
-            $path = $request->file('photo')->store('public/photos/employees'); // Simpan file di dalam direktori storage/app/files/cuti
-            $path = str_replace('public/photos/employees', 'storage/photos/employees', $path); // Ubah path agar sesuai dengan penyimpanan publik
+            $imageCom = ImageManagerStatic::make($request->file('photo'))->encode('jpg', 50);
+            $path = 'public/photos/employees/' . uniqid() . '.jpg';
+            Storage::disk('local')->put($path, $imageCom->stream());
+
+            $path = str_replace('public/photos/employees', 'storage/photos/employees', $path);
 
             $data['photo'] = $path;
         }

@@ -3,6 +3,7 @@
 namespace App\Helper;
 
 use DateTime;
+use Intervention\Image\ImageManagerStatic;
 
 class LibHelper {
 
@@ -67,5 +68,12 @@ class LibHelper {
         $totalMinutesFormatted = str_pad($totalMinutes, 2, '0', STR_PAD_LEFT);
 
         return $totalHoursFormatted.":".$totalMinutesFormatted.":00";
+    }
+
+    public static function compressImage($image, $type = 'jpg') { // png, jpeg, jpg
+        $img = ImageManagerStatic::make($image);
+                $img->encode($type, 75);
+
+        return $img->stream()->detach();
     }
 }

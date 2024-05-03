@@ -8,6 +8,8 @@ use App\Models\Cuti;
 use App\Models\EmployeeCuti;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic;
 
 class CutiController extends Controller
 {
@@ -27,8 +29,11 @@ class CutiController extends Controller
             $updateKuota = EmployeeCuti::where('employee_id', (!empty($request->employee_id_applicant))?$request->employee_id_applicant : $user->employee_id)->first();
 
             if ($request->hasFile('file')) {
-                $path = $request->file('file')->store('public/file/cuti', 'local'); // Simpan file di dalam direktori storage/app/files/cuti
-                $path = str_replace('public/file/cuti', 'storage/file/cuti', $path); // Ubah path agar sesuai dengan penyimpanan publik
+                $imageCom = ImageManagerStatic::make($request->file('file'))->encode('jpg', 50);
+                $path = 'public/file/cuti/' . uniqid() . '.jpg';
+                Storage::disk('local')->put($path, $imageCom->stream());
+
+                $path = str_replace('public/file/cuti', 'storage/file/cuti', $path);
             }
 
             $createCuti = Cuti::create([

@@ -10,6 +10,7 @@ use App\Models\Permit;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic;
 
 class IzinController extends Controller
 {
@@ -63,7 +64,10 @@ class IzinController extends Controller
         $total_day = $this->hitungHariIzin($request->input('start_date'), $request->input('end_date'));
 
         if($request->hasFile('image')){
-            $path = $request->file('image')->store('public/photos/izin');
+            $imageCom = ImageManagerStatic::make($request->file('image'))->encode('jpg', 50);
+            $path = 'public/photos/izin/' . uniqid() . '.jpg';
+            Storage::disk('local')->put($path, $imageCom->stream());
+
             $path = str_replace('public/photos/izin', 'storage/photos/izin', $path);
         }
 
@@ -171,8 +175,11 @@ class IzinController extends Controller
         ];
 
         if($request->hasFile('image')){
-            $path = $request->file('image')->store('public/photos/izin'); // Simpan file di dalam direktori storage/app/files/cuti
-            $path = str_replace('public/photos/izin', 'storage/photos/izin', $path); // Ubah path agar sesuai dengan penyimpanan publik
+            $imageCom = ImageManagerStatic::make($request->file('image'))->encode('jpg', 50);
+            $path = 'public/photos/izin/' . uniqid() . '.jpg';
+            Storage::disk('local')->put($path, $imageCom->stream());
+
+            $path = str_replace('public/photos/izin', 'storage/photos/izin', $path);
 
             $data['image'] = $path;
         }
