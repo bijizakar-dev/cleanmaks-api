@@ -252,7 +252,7 @@ class EmployeeAbsenceController extends Controller
                 } else if ($dataAbsence->clock_in == null && $dataAbsence->clock_out == null) {
                     $data['message'] = 'Silahkan Clock In 1';
                     $data['absence'] = 'IN';
-                } else if ($dataAbsence->clock_out != null && $dataAbsence->clock_out == null) {
+                } else if ($dataAbsence->clock_in != null && $dataAbsence->clock_out == null) {
                     $data['message'] = 'Silahkan Clock Out ';
                     $data['absence'] = 'OUT';
                 } else {
