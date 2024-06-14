@@ -42,19 +42,26 @@ class EmployeesController extends Controller
             'email' => 'required|string|email|max:2048|unique:employees',
             'gender' => 'required|string|in:M,F',
             'phone' => 'required|string|max:255',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
             'unit_id' => 'required|integer',
             'jabatan_id' => 'required|integer',
             'is_verified' => 'required|integer',
         ]);
 
-        if($request->hasFile('photo')){
-            $imageCom = ImageManagerStatic::make($request->file('photo'))->encode('jpg', 50);
-            $path = 'public/photos/employees/' . uniqid() . '.jpg';
-            Storage::disk('local')->put($path, $imageCom->stream());
+        // if($request->hasFile('photo')){
+        //     $imageCom = ImageManagerStatic::make($request->file('photo'))->encode('jpg', 50);
+        //     $path = 'public/photos/employees/' . uniqid() . '.jpg';
+        //     Storage::disk('local')->put($path, $imageCom->stream());
 
-            $path = str_replace('public/photos/employees', 'storage/photos/employees', $path);
+        //     $path = str_replace('public/photos/employees', 'storage/photos/employees', $path);
 
+        // }
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('public/photos/employees', $filename);
+            $path = str_replace('public', 'storage', $path);
         }
 
         Employee::create([
