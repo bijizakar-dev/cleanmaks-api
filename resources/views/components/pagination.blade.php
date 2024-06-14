@@ -1,6 +1,6 @@
 @props(['paginator'])
 
-@if ($paginator->hasPages())
+{{-- @if ($paginator->hasPages()) --}}
     <nav class="d-inline-block">
         <ul class="pagination mb-0">
             <!-- Previous Page Link -->
@@ -60,4 +60,4 @@
             @endif
         </ul>
     </nav>
-@endif
+{{-- @endif --}}

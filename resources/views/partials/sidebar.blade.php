@@ -17,6 +17,7 @@
                 ['name' => 'Tipe Jenis', 'url' => 'jenis-type'],
                 ['name' => 'Jadwal Pegawai', 'url' => 'jadwal-shift'],
                 ['name' => 'Hari Libur', 'url' => 'hari-libur'],
+                ['name' => 'Shifting', 'url' => 'shifting'],
             ],
         ],
         [
@@ -44,10 +45,10 @@
 <div class="main-sidebar sidebar-style-2">
     <aside id="sidebar-wrapper">
       <div class="sidebar-brand">
-        <a href="index.html">FG HRIS</a>
+        <a href="index.html">CM HRIS</a>
       </div>
       <div class="sidebar-brand sidebar-brand-sm">
-        <a href="index.html">FG</a>
+        <a href="index.html">CM</a>
       </div>
       <ul class="sidebar-menu">
         @if (!function_exists('is_submenu_active'))
@@ -55,7 +56,7 @@
             function is_submenu_active($submenu)
             {
                 foreach ($submenu as $item) {
-                    if (request()->is($item['url'])) {
+                    if (request()->is($item['url']) || request()->is($item['url'].'/*')) {
                         return true;
                     }
                 }
@@ -74,7 +75,7 @@
                     </a>
                     <ul class="dropdown-menu" style="{{ is_submenu_active($menu['submenu']) ? 'display:block' : '' }}">
                         @foreach ($menu['submenu'] as $submenu)
-                            <li class="{{ request()->is($submenu['url']) ? 'active' : '' }}">
+                            <li class="{{ request()->is($submenu['url']) || request()->is($submenu['url'].'/*') ? 'active' : '' }}">
                                 <a class="nav-link" href="{{ url($submenu['url']) }}">
                                     {{ $submenu['name'] }}
                                 </a>

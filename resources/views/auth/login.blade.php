@@ -24,7 +24,7 @@
           <div class="col-lg-4 col-md-6 col-12 order-lg-1 min-vh-100 order-2 bg-white">
             <div class="p-4 m-3">
               <img src="../assets/img/company.png" alt="logo" width="80" class="shadow-light rounded-circle mb-5 mt-2">
-              <h4 class="text-dark font-weight-normal">Welcome <span class="font-weight-bold">FARMAGITECHS</span></h4>
+              <h4 class="text-dark font-weight-normal">Welcome <span class="font-weight-bold">CLEANMAKS</span></h4>
               <p class="text-muted">Silahkan login terlebih dahulu untuk memulai explore aplikasi HRIS</p>
               <form action="{{url('handleLogin')}}" method="POST" id="loginForm">
                 {{ csrf_field() }}

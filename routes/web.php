@@ -12,6 +12,7 @@ use App\Http\Controllers\Masterdata\EmployeeScheduleController;
 use App\Http\Controllers\Masterdata\EmployeesController;
 use App\Http\Controllers\Masterdata\JabatanController;
 use App\Http\Controllers\Masterdata\JenisTypeController;
+use App\Http\Controllers\Masterdata\ShiftingController;
 use App\Http\Controllers\Masterdata\UserController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
@@ -120,6 +121,16 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('delete/{id}', [HolidayController::class, 'destroy'])->name('delete');
             Route::get('hit-api-holiday', [HolidayController::class, 'getHariLiburFromAPI'])->name('hit-api-holiday');
         });
+
+        Route::prefix('shifting')->name('shifting.')->group(function () {
+            Route::get('/', [ShiftingController::class, 'index'])->name('index');
+            Route::get('create', [ShiftingController::class, 'create'])->name('create');
+            Route::post('store', [ShiftingController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [ShiftingController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [ShiftingController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [ShiftingController::class, 'destroy'])->name('delete');
+        });
+
 
         // ===================================== LAYANAN ==================================================
 

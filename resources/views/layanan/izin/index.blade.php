@@ -62,8 +62,8 @@
                                 <th style="width: 23%">Pegawai</th>
                                 <th>Waktu Pengajuan</th>
                                 <th>Tipe</th>
-                                <th style="width: 18%">Waktu Izin</th>
-                                <th style="width: 7%" class="text-center">Total</th>
+                                <th style="width: 10%">Waktu Izin</th>
+                                <th style="width: 15%" class="text-center">Alasa</th>
                                 <th style="width: 10%" class="text-center">Status</th>
                                 <th style="width: 15%" class="text-center">Action</th>
                             </tr>
@@ -75,8 +75,14 @@
                                 <td>{{ $val->applicant->name }} <br/> <small>{{$val->applicant->divisi->name}}</small></td>
                                 <td>{{ date('d/m/Y H:i', strtotime($val->date)) }}</td>
                                 <td>{{ $val->permit_type->name }}</td>
-                                <td>{{ date('d/m/Y', strtotime($val->start_date)) }} s.d {{date('d/m/Y', strtotime($val->end_date))}} </td>
-                                <td class="text-center">{{ $val->total }}</td>
+                                <td>
+                                    <small>
+                                        S : {{ date('d/m/Y', strtotime($val->start_date)) }} <br/>
+                                        E : {{date('d/m/Y', strtotime($val->end_date))}} <br>
+                                        Dur : {{ $val->total }} Hari
+                                    </small>
+                                </td>
+                                <td class=""><small>{{ strip_tags($val->reason) }}</small></td>
                                 <td class="text-center">
                                     @if($val->status == 'Submitted')
                                         <div type="button" class="badge badge-info" onclick="open_edit_status({{$val->id}}, '{{$val->status}}')"><i class="fa fa-paper-plane"></i> Submitted</div>

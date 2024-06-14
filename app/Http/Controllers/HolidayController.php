@@ -12,16 +12,18 @@ class HolidayController extends Controller
 {
     public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $type = HariLibur::query();
 
         if ($request->has('search')) {
-            $type->where('name', 'LIKE', '%'.$request->input('search').'%')
-                ->orWhere('date', 'LIKE', '%'.$request->input('search').'%');
+            $type->where('name', 'LIKE', '%'.$search.'%')
+                ->orWhere('date', 'LIKE', '%'.$search.'%');
         }
 
         $result = $type->paginate(10);
 
-        return view('masterdata.hariLibur.index', compact('result'));
+        return view('masterdata.hariLibur.index', compact('result', 'search'));
     }
 
     public function edit(Request $request, $id) {
